@@ -1,0 +1,47 @@
+{
+  "name": "COMP584Project",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "PiXL Visualization with Node and d3.js",
+  "scripts": {
+    "start": "parallelshell \"NODE_ENV=development babel-node src/server.js\" \"npm run babel:client\" \"npm run sass\"",
+    "watch": "parallelshell \"NODE_ENV=development npm run babel:client\" \"nodemon -e js,json,hbs,html --exec babel-node src/server.js\" \"npm run watch:sass\"",
+    "prod": "NODE_ENV=production npm run build && npm run serve",
+    "serve": "node server.js",
+    "build": "npm run clear && npm run babel && npm run sass",
+    "sass": "node-sass-chokidar src/assets/scss -o public/css",
+    "watch:sass": "node-sass-chokidar -w src/assets/scss -o public/css",
+    "live-reload": "live-server --port=3000 --entry-point=/ --host=localhost",
+    "babel": "npm run babel:server && npm run babel:client",
+    "babel:server": "babel src/server.js server.js --watch",
+    "babel:client": "babel src/assets/js -d public/js --copy-files --watch",
+    "clear": "rm -rf public && mkdir public",
+    "reinstall": "rm -rf node_modules && rm package-lock.json && npm install"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "data.json",
+      "assets/js/*",
+      "public/*"
+    ]
+  },
+  "dependencies": {
+    "csv": "^5.3.2",
+    "ejs": "^3.1.2",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.3",
+    "fs": "0.0.1-security",
+    "nodemon": "^2.0.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "node-sass-chokidar": "^1.4.0",
+    "parallelshell": "^3.0.2"
+  },
+  "optionalDependencies": {
+    "win-node-env": "^0.4.0"
+  }
+}

@@ -1,0 +1,13 @@
+<h1>{{header}}</h1>
+<div id="detector-dropdown-group" class="btn-group">
+  <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Detector</button>
+  <div id="detector-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {{#each data}}
+        {{#ifnoteq @key "type" }}
+            <a class="dropdown-item" href="#" data="{{@key}}">Detector {{@key}}</a>
+        {{/ifnoteq}}
+    {{/each}}
+  </div>
+</div>
+<pre id="test" class="bg-light rounded m-2 p-2"></pre>
+<svg id="elements-barchart" data="{{#base64 data}}{{/base64}}"></svg>
