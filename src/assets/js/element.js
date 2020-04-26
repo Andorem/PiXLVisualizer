@@ -73,7 +73,7 @@ function updateHeatmap(values) {
 //   })
 //   .attr('width', xScale.bandwidth())
 //   .attr('height', yScale.bandwidth())
-      .style("fill", function(d) { return getColor(d.relative)} )
+      .style("fill", function(d) { return getColor(d.absolute)} )
       .style("stroke-width", 4)
       .style("stroke", "none")
       .style("opacity", 0.8)
