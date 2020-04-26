@@ -4,17 +4,18 @@
   "type": "module",
   "description": "PiXL Visualization with Node and d3.js",
   "scripts": {
-    "start": "parallelshell \"NODE_ENV=development babel-node src/server.js\" \"npm run babel:client\" \"npm run sass\"",
-    "watch": "parallelshell \"NODE_ENV=development npm run babel:client\" \"nodemon -e js,json,hbs,html --exec babel-node src/server.js\" \"npm run watch:sass\"",
+    "start": "parallelshell \"NODE_ENV=development babel-node src/server.js\" \"npm run watch:babel\" \"npm run sass\"",
+    "watch": "parallelshell \"NODE_ENV=development npm run watch:babel\" \"nodemon -e js,json,hbs,html --exec babel-node src/server.js\" \"npm run watch:sass\"",
     "prod": "NODE_ENV=production npm run build && npm run serve",
-    "serve": "node server.js",
+    "serve": "node build/server.js",
     "build": "npm run clear && npm run babel && npm run sass",
     "sass": "node-sass-chokidar src/assets/scss -o public/css",
     "watch:sass": "node-sass-chokidar -w src/assets/scss -o public/css",
+    "watch:babel": "babel src/assets/js -d public/js --copy-files --watch",
     "live-reload": "live-server --port=3000 --entry-point=/ --host=localhost",
     "babel": "npm run babel:server && npm run babel:client",
-    "babel:server": "babel src/server.js server.js --watch",
-    "babel:client": "babel src/assets/js -d public/js --copy-files --watch",
+    "babel:server": "babel src -d build --copy-files",
+    "babel:client": "babel src/assets/js -d public/js --copy-files",
     "clear": "rm -rf public && mkdir public",
     "reinstall": "rm -rf node_modules && rm package-lock.json && npm install"
   },
@@ -39,7 +40,7 @@
     "@babel/node": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
     "node-sass-chokidar": "^1.4.0",
-    "parallelshell": "^3.0.2"
+    "parallelshell": "^3.0.1"
   },
   "optionalDependencies": {
     "win-node-env": "^0.4.0"
