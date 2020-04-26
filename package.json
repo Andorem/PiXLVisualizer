@@ -11,7 +11,7 @@
     "build": "npm run clear && npm run babel && npm run sass",
     "sass": "node-sass-chokidar src/assets/scss -o public/css",
     "watch:sass": "node-sass-chokidar -w src/assets/scss -o public/css",
-    "watch:babel": "babel src/assets/js -d public/js --copy-files --watch",
+    "watch:babel": "babel src/assets -d public --ignore src/assets/scss --copy-files --no-copy-ignored --watch && rm -r public/scss",
     "live-reload": "live-server --port=3000 --entry-point=/ --host=localhost",
     "babel": "npm run babel:server && npm run babel:client",
     "babel:server": "babel src -d build --copy-files",

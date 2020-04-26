@@ -27,6 +27,7 @@ app.use(express.urlencoded({
 let rootDir = path.resolve(__dirname, '../');
 app.use('/js',express.static(path.join(rootDir, 'public/js')));
 app.use('/css',express.static(path.join(rootDir, 'public/css')));
+app.use('/img',express.static(path.join(rootDir, 'public/img')));
 app.set('views', path.join(__dirname, 'views'));
 
 // Template Engine
