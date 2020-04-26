@@ -7,7 +7,6 @@ let heatmap = d3.select('#heatmap').attr('style', `width: ${width}; height: ${he
 let data = JSON.parse(atob(heatmap.attr("data")));
 heatmap.attr('data', ""); // clear passed data
 
-console.log(data);
 
 $(document).ready(function() {
     $("#detector-dropdown a").click(function(e) {
@@ -57,7 +56,15 @@ function updateHeatmap(values) {
     .range([0, overlayHeight])
     .padding(0.1)
 
-    heatmap.selectAll('rect')
+    d3.select("#heatmap").append("text")
+    .attr("x", overlayWidth/2)
+    .attr("y", 0)
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style('fill', 'white')
+    .text("Heatmap");
+
+    d3.select("#heatmap").selectAll('rect')
     .data(values)
     .enter()
     .append("rect")
@@ -65,34 +72,12 @@ function updateHeatmap(values) {
       .attr("y", function(d) { return d.coords.y })
       .attr("width", xScale.bandwidth() )
       .attr("height", yScale.bandwidth() )
-//   .attr('x', d => {
-//     return xScale(d.coords.x);
-//   })
-//   .attr('y', d => {
-//     return yScale(d.coords.y);
-//   })
-//   .attr('width', xScale.bandwidth())
-//   .attr('height', yScale.bandwidth())
       .style("fill", function(d) { return getColor(d.absolute)} )
       .style("stroke-width", 4)
       .style("stroke", "none")
       .style("opacity", 0.8)
-    .on("mouseover", mouseover)
-    .on("mouseleave", mouseleave);
-    
+      .append("text")
+      .attr("text-anchor", "middle") 
+      .attr("transform", "translate("+ (10/2) +","+(5/2)+")rotate(-90)") 
+      .text(function(d) {return d.absolute});
 }
-
-    var mouseover = function(d) {
-        tooltip
-          .style("opacity", 1)
-        d3.select(this)
-          .style("stroke", "black")
-          .style("opacity", 1)
-      }
-      var mouseleave = function(d) {
-        tooltip
-          .style("opacity", 0)
-        d3.select(this)
-          .style("stroke", "none")
-          .style("opacity", 0.8)
-      }

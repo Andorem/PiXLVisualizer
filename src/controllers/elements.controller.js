@@ -9,6 +9,15 @@ export function getAll(req, res) {
   else res.status(404).send("NOT FOUND");
 }
 
+export function listElements(req, res) {
+  let names = Elements.getNames();
+  if (names) res.render('elements/all-elements', {
+    view: 'elements',
+    header: 'Elements',
+    data: names
+  });
+}
+
 export function getElement(req, res) {
   let type = req.params.type;
   let element = Elements.get(type);

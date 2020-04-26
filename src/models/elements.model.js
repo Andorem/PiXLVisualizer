@@ -1,5 +1,6 @@
 "use strict";
 import {DATA, DATA_BASE64} from "../data/data.js";
+import {ELEMENT_NAMES} from '../data/names.js';
 
 var Elements = {
 
@@ -11,6 +12,10 @@ var Elements = {
 
   getAll(encode=false) {
     return (encode ? DATA_BASE64 : DATA);
+  },
+
+  getNames() {
+    return ELEMENT_NAMES;
   },
 
   getPixel(type, detector, x, y) {
