@@ -1,0 +1,72 @@
+html {
+  font-family: sans-serif;
+  padding: 0; }
+
+body {
+  padding: 0;
+  margin: 0; }
+
+footer {
+  padding: 20px; }
+
+h1 {
+  font-size: 2em; }
+
+a {
+  color: teal;
+  text-decoration: none !important; }
+  a:hover {
+    color: lightseagreen; }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  background-color: teal; }
+
+.dropdown-hover .dropdown-toggle::after {
+  transition: .2s all ease;
+  color: #e7e7e7; }
+
+.dropdown-hover.show, .dropdown-hover:hover {
+  background-color: #555555;
+  color: #e7e7e7; }
+
+.dropdown-hover.show .dropdown-toggle::after {
+  margin-bottom: -3px; }
+
+.dropdown-hover .dropdown-menu {
+  margin-top: -2px; }
+
+.dropdown-hover:hover .dropdown-menu {
+  display: block; }
+
+header h2, header nav, header ul {
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+header h2 {
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  font-size: 1.5em; }
+
+header nav ul {
+  list-style: none; }
+
+header nav li {
+  display: inline-block;
+  padding: 5px 10px; }
+
+header nav a {
+  color: white; }
+
+main {
+  min-height: 400px; }
+  main h1, main h2 {
+    margin-bottom: 15px; }
+
+footer {
+  color: white;
+  font-size: .75em; }
+  footer h1 {
+    color: lightgray;
+    font-size: .75em; }

@@ -1,0 +1,24 @@
+<h1>{{header}}</h1>
+<div class="tab-content w-100">
+    <div class="tab-pane fade show active" id="heatmap" role="tabpanel">
+        <div class=" d-flex flex-column align-items-center">
+            <div id="detector-dropdown-group" class="btn-group">
+                <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Detector
+                </button>
+                <div id="detector-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {{#each data}}
+                    {{#ifnoteq @key "type" }}
+                    <a class="dropdown-item" href="#" data="{{@key}}">Detector {{@key}}</a>
+                    {{/ifnoteq}}
+                    {{/each}}
+                </div>
+            </div>
+            <div id="heatmap-wrapper" class="d-inline-block w-75 bg-light">
+                <svg id="heatmap-svg" viewBox="0 0 752 580" data="{{#base64 data}}{{/base64}}">
+                </svg>
+            </div>
+        </div>
+    </div>
+ </div>
