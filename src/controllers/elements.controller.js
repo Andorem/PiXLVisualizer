@@ -25,7 +25,10 @@ export function getElement(req, res) {
     res.render('elements/element', {
       view: 'element',
       header: `${element.type.full} (${element.type.abbreviation})`,
-      data: element
+      data: element,
+      nav: {
+        "Heatmap": {link: '#heatmap', active: true}
+      }
     });
   }
   else res.status(404).send("NOT FOUND");

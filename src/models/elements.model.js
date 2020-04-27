@@ -6,8 +6,7 @@ var Elements = {
 
   get(type) {
     let elementData = DATA[type];
-    if (elementData) return elementData;
-    else return "NOT FOUND";
+    return elementData;
   },
 
   getAll(encode=false) {

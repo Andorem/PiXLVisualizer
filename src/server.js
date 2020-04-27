@@ -2,6 +2,7 @@
 
 import path from 'path';
 import {DATA} from './data/data.js'; 
+import {ELEMENT_NAMES} from './data/names.js'; 
 import {encode} from './data/utils.js'; 
 import router from './routes/index.router';
 import elementsRouter from './routes/elements.router';
@@ -10,11 +11,18 @@ import detectorsRouter from './routes/detectors.router';
 var express = require('express');
 var hbs = require('express-handlebars');
 
-// Connect to port
+
+
 var app = express();
+
+// Globals
+app.locals.ELEMENT_NAMES = ELEMENT_NAMES;
+
+// Connect to port
 app.set('port', 3000);
 app.listen(app.get('port'));
 console.log("Server listening on " + app.get('port'));
+
 
 // Set up JSON responses
 app.use(express.json());
@@ -40,7 +48,8 @@ app.engine('hbs', hbs({
     ifeq: ifEqual,
     ifnoteq: ifNotEqual,
     stringify: stringify,
-    base64: base64
+    base64: base64,
+    lowercase: lowercase
   }
 }));
 app.set('view engine', 'hbs');// for html templates
@@ -60,9 +69,11 @@ function stringify(a) {
 function base64(a) {
   return encode(a);
 }
+function lowercase(a) { 
+  return a.toLowerCase(); 
+}
 
 // Routes for Controllers
 app.use('/', router);
 app.use('/element(s?)', elementsRouter);
 app.use('/detector(s?)', detectorsRouter);
-

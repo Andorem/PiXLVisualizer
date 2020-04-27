@@ -6,14 +6,42 @@ body {
     padding: 0;
     margin: 0
 }
-header, main, footer {
+footer {
     padding: 20px;
 }
+h1 {
+    font-size: 2em;
+}
+
 a {
     color: teal;
     text-decoration: none !important;
     &:hover {
         color: lightseagreen;
+    } 
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background-color: teal;
+}
+.dropdown-hover {
+    .dropdown-toggle::after {
+        transition: .2s all ease;
+        color: rgb(231, 231, 231);
+    }
+    &.show, &:hover {
+        background-color: rgb(85, 85, 85); 
+        color: rgb(231, 231, 231);
+    }
+    &.show {
+        .dropdown-toggle::after {
+            margin-bottom: -3px;
+        }
+    }
+    .dropdown-menu {
+        margin-top: -2px;
+    }
+    &:hover .dropdown-menu {
+        display: block;
     }
 }
 header {

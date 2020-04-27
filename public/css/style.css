@@ -6,14 +6,37 @@ body {
   padding: 0;
   margin: 0; }
 
-header, main, footer {
+footer {
   padding: 20px; }
+
+h1 {
+  font-size: 2em; }
 
 a {
   color: teal;
   text-decoration: none !important; }
   a:hover {
     color: lightseagreen; }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  background-color: teal; }
+
+.dropdown-hover .dropdown-toggle::after {
+  transition: .2s all ease;
+  color: #e7e7e7; }
+
+.dropdown-hover.show, .dropdown-hover:hover {
+  background-color: #555555;
+  color: #e7e7e7; }
+
+.dropdown-hover.show .dropdown-toggle::after {
+  margin-bottom: -3px; }
+
+.dropdown-hover .dropdown-menu {
+  margin-top: -2px; }
+
+.dropdown-hover:hover .dropdown-menu {
+  display: block; }
 
 header h2, header nav, header ul {
   display: inline-block;

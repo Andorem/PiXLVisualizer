@@ -1,6 +1,24 @@
 #detector-dropdown-group {
-  display: block; }
+  display: block;
+  margin-bottom: 10px; }
+  #detector-dropdown-group .spinner-border {
+    display: none; }
 
-rect {
-  width: 3px;
-  height: 3px; }
+#heatmap-wrapper {
+  position: relative;
+  overflow: hidden; }
+
+#heatmap-tooltip {
+  position: absolute;
+  text-align: left;
+  min-width: 40px;
+  height: auto;
+  padding: 5px;
+  font: 12px sans-serif;
+  background: dimgray;
+  color: white;
+  font-weight: bold;
+  border: 0px;
+  border-radius: 5px;
+  pointer-events: none;
+  box-shadow: 2px 2px 4px #323232; }

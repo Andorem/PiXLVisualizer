@@ -11,9 +11,17 @@
                 <li class="nav-item {{#ifeq view "index"}}active{{/ifeq}}">
                     <a class="nav-link" href="/">Home</a>
                 </li>
-                <li class="nav-item {{#ifeq view "element"}}active{{/ifeq}}">
-                    <a class="nav-link" href="/elements">Elements</a>
+                 <li class="nav-item dropdown dropdown-hover
+                    {{#ifeq view "element"}}active{{/ifeq}}
+                    {{#ifeq view "elements"}}active{{/ifeq}}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="/elements">Elements</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {{#each ELEMENT_NAMES}}
+                            <a class="dropdown-item" href="/element/{{@key}}">{{this}} ({{@key}})</a>
+                        {{/each}}  
+                    </div>
                 </li>
+                
             </ul>
         </div>
     </nav>

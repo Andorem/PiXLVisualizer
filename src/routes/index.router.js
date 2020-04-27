@@ -8,7 +8,10 @@ router.get('/', function (req, res) { // Route main URL to index.html
   res.render('index', {
     view: 'index',
     header: "Home",
-    message: "Hello World!"
+    nav: {
+      "About": {link: "#about", active: true},
+      "Tools": {link: "#tools"}
+    }
   });
 });
 
