@@ -2,11 +2,11 @@
 PiXL visualization built with Node.js and d3.js using MVC architecture
 
 ## Contributors
-Tommy Avetisyan
-Henry Dinh
-Kyle Felkel
-Alexis Siguenza
-Elvis Ventura
+* Tommy Avetisyan
+* Henry Dinh
+* Kyle Felkel
+* Alexis Siguenza
+* Elvis Ventura
 
 ## Installation
 ```
