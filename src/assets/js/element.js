@@ -3,8 +3,8 @@
 let width = 752;
 let height = 580;
 
-let scaleMultiplier = 1.5;
-let heatmap = d3.select('#heatmap-svg');//.attr('transform', `scale(${scaleMultiplier})`);
+let zoomDefault = 2;
+let heatmap = d3.select('#heatmap-svg');
 
 let data = JSON.parse(atob(heatmap.attr("data")));
 heatmap.attr('data', ""); // clear passed data
@@ -20,30 +20,60 @@ heatmap.attr('data', ""); // clear passed data
  .attr('x', 0)
  .attr('y', 0)
 
- // Zoom and pan
-heatmap.call(d3.zoom()
-.scaleExtent([1, 10])
-.translateExtent([[0, 0], [width, height]])
-.extent([[0, 0], [width, height]])
-.on("zoom", function () {
-    heatmap.attr("transform", d3.event.transform);
- }));
+
+/* Toggles and Controls */
 
 // Detector Selection Dropdown
-let spinner = $("#detector-dropdown-group .spinner-border");
+let detectorSpinner = $("#detector-dropdown-group .spinner-border");
+let detectorLabel = $('#detector-dropdown-group button .detector-label');
+let detectorButton = $('#detector-dropdown-group button');
+
 $(document).ready(function() {
     $("#detector-dropdown a").click(function(e) {
         e.preventDefault();
         var detectorName = $(this).attr('data');
-        $('#detector-dropdown-group button').text($(this).text());
-        $("#detector-dropdown-group button").attr('data', detectorName);
-        spinner.attr('display', 'block');
+        detectorLabel.text($(this).text())
+            .attr('data', detectorName);
+        detectorSpinner.addClass('d-block');
+        detectorButton.addClass('disabled');
         setTimeout(function() {
             update(detectorName);
-            spinner.attr('display', 'none');
+            detectorSpinner.removeClass('d-block');
+            detectorButton.removeClass('disabled');
         }, 100);
     });
 });
+
+/* Zoom Functionality */
+// Zoom and Pan
+var zoomSlider = d3.selectAll("#heatmap-zoom-form input")
+  .datum({});
+var zoomAction = d3.zoom()
+.scaleExtent([1, 10])
+.translateExtent([[-1 * width, -1 * height], [width, height]])
+.extent([[-1 * width, -1 * height], [width, height]])
+.on("zoom", function () {
+    heatmap.attr("transform", d3.event.transform);
+    zoomSlider.property("value", d3.event.transform.k.toFixed(2));
+});
+heatmap.call(zoomAction);
+
+// Zoom Range Slider
+zoomSlider.attr("value", zoomAction.scaleExtent()[0])
+  .attr("min", zoomAction.scaleExtent()[0])
+  .attr("max", zoomAction.scaleExtent()[1])
+  .attr("step", (zoomAction.scaleExtent()[1] - zoomAction.scaleExtent()[0]) / 100)
+  .on("input", rangeSlideAction);
+
+function rangeSlideAction(d){
+    let zoomLevel = d3.select(this).property("value");
+    zoomAction.scaleTo(heatmap, d3.select(this).property("value"));
+}
+
+// Zoom Defaults
+zoomSlider.property("value", zoomDefault);
+zoomAction.scaleTo(heatmap, zoomDefault);
+
 
 function update(name) {
     // $('#test').text(JSON.stringify(data[value], null, 2));
@@ -152,11 +182,9 @@ function updateHeatmap(values) {
     .style("class", "heatmap-data")
       .attr("x", function(d) { return parseFloat(d.coords.x) ; })
       .attr("y", function(d) { return parseFloat(d.coords.y); })
-      .attr("width", 3)
-      .attr("height",3 )
+      .attr("width", 2.5)
+      .attr("height", 2.5)
       .style("fill", function(d) { return getColor(d.relative)} )
-      .style("stroke-width", 4)
-      .style("stroke", "none")
       .style("opacity", 0.8) 
       .on("mouseover", function(d) {
             tooltip.html(`<b>X:</b> ${d.coords.x}, <b>Y:</b> ${d.coords.y}<br>
@@ -169,8 +197,19 @@ function updateHeatmap(values) {
                 .style("background-color", getColor(d.relative));
             if ((d.relative / max.rel) > .80) tooltip.style("color", "black"); // make text easier to see for light color values
             else tooltip.style("color", "white");
-        })
-      .on("mouseout", function(d) { tooltip.style("display", "none"); });
+            
+            d3.select(this).style("fill", function(d) {
+                return d3.rgb(getColor(d.relative)).brighter(2);
+            })
+            .style('opacity', 1);
+      })
+      .on("mouseout", function(d) { tooltip.style("display", "none"); })
+      .on("mouseleave", function(d) { 
+            d3.select(this).style("fill", function(d) {
+                return getColor(d.relative);
+            })
+            .style('opacity', .75);
+        });
    
 }
 
