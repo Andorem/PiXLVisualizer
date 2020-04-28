@@ -13,8 +13,8 @@ Elvis Ventura
 git clone https://github.com/andorem/COMP584Project.git
 npm install
 npm start // Start server and build frontend
-npm watch // Start dev server with live reload
-npm prod // Build and serve
+npm run watch // Start dev server with live reload
+npm run prod // Build and serve
 ```
 
 ## Structure
