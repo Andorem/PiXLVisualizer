@@ -99,13 +99,13 @@ function updateHeatmap(values) {
   var tooltip = $("#heatmap-tooltip").length ? // don't create duplicate tooltip
   d3.select("#heatmap-tooltip") : heatmapWrapper.append("div").attr("id", "heatmap-tooltip").style("display", "none"); // Heatmap Color Range
 
-  var getColor = d3.scaleSequential().interpolator(d3.interpolateMagma).domain([0, max.rel]); // X Scale
+  var getColor = d3.scaleSequential().interpolator(getElementColor(data.type.abbreviation)).domain([0, max.rel]); // X Scale
 
   var xScale = d3.scaleBand().domain(xCoords).range([0, overlayWidth]).paddingInner(20).paddingOuter(10 / 2); // Y Scale
 
   var yScale = d3.scaleBand().domain(yCoords).range([0, overlayHeight]).paddingInner(.2).paddingOuter(.2); // Legend
 
-  var legendColorScale = d3.scaleSequential(d3.interpolateMagma).domain([0, max.rel]);
+  var legendColorScale = d3.scaleSequential(getElementColor(data.type.abbreviation)).domain([0, max.rel]);
 
   if ($("#heatmap-legend").length) {
     // don't create duplicate legend
@@ -125,11 +125,11 @@ function updateHeatmap(values) {
     return parseFloat(d.coords.y);
   }).attr("width", 2.5).attr("height", 2.5).style("fill", function (d) {
     return getColor(d.relative);
-  }).style("opacity", 0.8).on("mouseover", function (d) {
+  }).style("opacity", 0.6).on("mouseover", function (d) {
     tooltip.html("<b>X:</b> ".concat(d.coords.x, ", <b>Y:</b> ").concat(d.coords.y, "<br>\n                <b>Relative:</b> ").concat(d.relative, "<br>\n                <b>Absolute:</b> ").concat(d.absolute, "\n            "));
     tooltip.style("display", null).style("left", d3.mouse(heatmapWrapper.node())[0] + 20 + "px") // mouse relative to heatmap
     .style("top", d3.mouse(heatmapWrapper.node())[1] + "px").style("background-color", getColor(d.relative));
-    if (d.relative / max.rel > .80) tooltip.style("color", "black"); // make text easier to see for light color values
+    if (d.relative / max.rel < .80) tooltip.style("color", "black"); // make text easier to see for light color values
     else tooltip.style("color", "white");
     d3.select(this).style("fill", function (d) {
       return d3.rgb(getColor(d.relative)).brighter(2);
@@ -139,7 +139,7 @@ function updateHeatmap(values) {
   }).on("mouseleave", function (d) {
     d3.select(this).style("fill", function (d) {
       return getColor(d.relative);
-    }).style('opacity', .75);
+    }).style('opacity', .6);
   });
 }
 

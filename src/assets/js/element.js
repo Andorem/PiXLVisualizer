@@ -138,7 +138,7 @@ function updateHeatmap(values) {
     
     // Heatmap Color Range
     var getColor = d3.scaleSequential()
-    .interpolator(d3.interpolateMagma)
+    .interpolator(getElementColor(data.type.abbreviation))
     .domain([0, max.rel]);
 
     // X Scale
@@ -155,7 +155,7 @@ function updateHeatmap(values) {
 
  
     // Legend
-    var legendColorScale = d3.scaleSequential(d3.interpolateMagma)
+    var legendColorScale = d3.scaleSequential(getElementColor(data.type.abbreviation))
     .domain([0, max.rel]);
 
     if ($("#heatmap-legend").length) { // don't create duplicate legend
@@ -191,7 +191,7 @@ function updateHeatmap(values) {
       .attr("width", 2.5)
       .attr("height", 2.5)
       .style("fill", function(d) { return getColor(d.relative)} )
-      .style("opacity", 0.8) 
+      .style("opacity", 0.6) 
       .on("mouseover", function(d) {
             tooltip.html(`<b>X:</b> ${d.coords.x}, <b>Y:</b> ${d.coords.y}<br>
                 <b>Relative:</b> ${d.relative}<br>
@@ -201,7 +201,7 @@ function updateHeatmap(values) {
                 .style("left", (d3.mouse(heatmapWrapper.node())[0] + 20) + "px") // mouse relative to heatmap
                 .style("top", (d3.mouse(heatmapWrapper.node())[1]) + "px")
                 .style("background-color", getColor(d.relative));
-            if ((d.relative / max.rel) > .80) tooltip.style("color", "black"); // make text easier to see for light color values
+            if ((d.relative / max.rel) < .80) tooltip.style("color", "black"); // make text easier to see for light color values
             else tooltip.style("color", "white");
             
             d3.select(this).style("fill", function(d) {
@@ -214,7 +214,7 @@ function updateHeatmap(values) {
             d3.select(this).style("fill", function(d) {
                 return getColor(d.relative);
             })
-            .style('opacity', .75);
+            .style('opacity', .6);
         });
    
 }
