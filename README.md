@@ -2,19 +2,19 @@
 PiXL visualization built with Node.js and d3.js using MVC architecture
 
 ## Contributors
-Tommy Avetisyan
-Henry Dinh
-Kyle Felkel
-Alexis Siguenza
-Elvis Ventura
+* Tommy Avetisyan
+* Henry Dinh
+* Kyle Felkel
+* Alexis Siguenza
+* Elvis Ventura
 
 ## Installation
 ```
 git clone https://github.com/andorem/COMP584Project.git
 npm install
 npm start // Start server and build frontend
-npm watch // Start dev server with live reload
-npm prod // Build and serve
+npm run watch // Start dev server with live reload
+npm run prod // Build and serve
 ```
 
 ## Structure
