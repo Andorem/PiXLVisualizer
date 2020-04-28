@@ -35,6 +35,12 @@ function continuous(selector_id, colorscale) {
   var legendaxis = d3.axisRight().scale(legendscale).tickSize(6).ticks(8);
   var svg = d3.select(selector_id).append("svg").attr("height", legendheight + "px").attr("width", legendwidth + "px").style("position", "absolute").style("left", "0px").style("top", "0px");
   svg.append("g").attr("class", "axis").attr("transform", "translate(" + (legendwidth - margin.left - margin.right + 3) + "," + margin.top + ")").call(legendaxis);
+  return {
+    height: legendheight,
+    legendwidth: legendwidth,
+    margin: margin,
+    scale: legendscale
+  };
 }
 
 ;

@@ -76,4 +76,11 @@ var foBody = foreignObject.append("xhtml:body")
       .attr("class", "axis")
       .attr("transform", "translate(" + (legendwidth - margin.left - margin.right + 3) + "," + (margin.top) + ")")
       .call(legendaxis);
+
+      return {
+        height: legendheight,
+        legendwidth: legendwidth,
+        margin: margin,
+        scale: legendscale
+      };
   };

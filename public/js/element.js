@@ -11,7 +11,8 @@ var valueTypes = {
   "relative": 2.5
 };
 var valueDefault = "relative",
-    valueWidth = valueTypes[valueDefault];
+    valueWidth = valueTypes[valueDefault],
+    valueType = valueDefault;
 var heatmap = d3.select('#heatmap-svg');
 var data = JSON.parse(atob(heatmap.attr("data")));
 heatmap.attr('data', ""); // clear passed data
@@ -82,8 +83,9 @@ var valueSelect = d3.selectAll("#heatmap-values select");
 valueSelect.property("value", valueDefault).on("input", valueSelectAction);
 
 function valueSelectAction(d) {
-  valueWidth = valueTypes[d3.select(this).property("value")];
-  d3.selectAll('.heatmap-data').attr('width', valueWidth);
+  valueType = d3.select(this).property("value");
+  valueWidth = valueTypes[valueType];
+  d3.selectAll('.heatmap-data').attr('width', valueWidth).classed("value-original", valueType == "original");
 } // Opacity Defaults
 
 
@@ -149,17 +151,20 @@ function updateHeatmap(values) {
   var yAxis = overlay.append("g").call(yAxisGen).attr("transform", "translate(".concat(overlayWidth * 2.5 + 43, ", ").concat(overlayHeight - 40, ")")).attr('class', 'axis y-axis'); // Legend
 
   var legendColorScale = d3.scaleSequential(getElementColor(data.type.abbreviation)).domain([0, max.rel]);
+  var legendSliderScale = d3.scaleLinear().range([0, max.rel]).domain([0, max.rel]); // Legend Color Bar
 
   if ($("#heatmap-legend").length) {
     // don't create duplicate legend
     d3.select("#heatmap-legend").remove();
   }
 
-  overlay.append("svg").attr("id", "heatmap-legend");
-  continuous("#heatmap-legend", legendColorScale);
-  var legend = d3.select("#heatmap-legend").attr('y', overlayHeight + "px").attr('x', xCoords[0] - 75 + "px"); // Legend Title
+  var legend = overlay.append("svg").attr("id", "heatmap-legend").attr('y', overlayHeight + "px").attr('x', xCoords[0] - 60 + "px").style('overflow', 'auto');
+  var legendData = continuous("#heatmap-legend", legendColorScale); // Legend Title
 
-  var title = overlay.append("text").attr("x", xCoords[0] - 50 + "px").attr("y", overlayHeight + "px").attr("text-anchor", "middle").style("font-size", "12px").style('fill', 'black').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, "_%")); // Data Points
+  var title = overlay.append("text").attr('class', 'legend-title').attr("x", xCoords[0] - 45 + "px").attr("y", overlayHeight + "px").attr("text-anchor", "middle").style("font-size", "12px").style('fill', 'black').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, "_%")); // Legend Slider
+
+  var triangleSymbol = d3.symbol().type(d3.symbolTriangle).size(25);
+  legend.append("g").attr("transform", "rotate(90)").append("g").attr("class", "legend-slider").attr("transform", "translate(90, 2)").append("path").attr("d", triangleSymbol()); // Data Points
 
   overlay.selectAll('rect').data(values).enter().append("rect").attr("class", "heatmap-data").attr("x", function (d) {
     return parseFloat(d.coords.x);
@@ -168,20 +173,30 @@ function updateHeatmap(values) {
   }).attr("width", valueWidth).attr("height", 2.5).style("fill", function (d) {
     return getColor(d.relative);
   }).style("opacity", opacityLevel).on("mouseover", function (d) {
+    // Show tooltip
     tooltip.html("<b>X:</b> ".concat(d.coords.x, ", <b>Y:</b> ").concat(d.coords.y, "<br>\n                <b>Relative:</b> ").concat(d.relative, "<br>\n                <b>Absolute:</b> ").concat(d.absolute, "\n            "));
     tooltip.style("display", null).style("left", d3.mouse(heatmapWrapper.node())[0] + 20 + "px") // mouse relative to heatmap
     .style("top", d3.mouse(heatmapWrapper.node())[1] + "px").style("background-color", getColor(d.relative));
     if (d.relative / max.rel < .80) tooltip.style("color", "black"); // make text easier to see for light color values
-    else tooltip.style("color", "white");
+    else tooltip.style("color", "white"); // Highlight data point
+
     d3.select(this).style("fill", function (d) {
       return d3.rgb(getColor(d.relative)).brighter(2);
-    }).style('opacity', 1);
+    }).style('opacity', 1); // if (d3.select(this).classed('value-original')) { // give border to see thinner values easier
+
+    d3.select(this).style("stroke", "red").style("stroke-width", ".5px"); // }
+    // Move legend slider
+
+    d3.select(".legend-slider").transition().delay(25).attr("transform", "translate(".concat(legendData.scale(d.relative) + 10, ", 2)"));
   }).on("mouseout", function (d) {
     tooltip.style("display", "none");
   }).on("mouseleave", function (d) {
+    // Remove hover effects
     d3.select(this).style("fill", function (d) {
       return getColor(d.relative);
-    }).style('opacity', opacityLevel);
+    }).style('opacity', opacityLevel); // if (d3.select(this).classed('value-original')) {
+
+    d3.select(this).style("stroke", "none"); // }
   });
 }
 
