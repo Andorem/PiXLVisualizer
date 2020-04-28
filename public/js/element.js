@@ -18,9 +18,7 @@ var data = JSON.parse(atob(heatmap.attr("data")));
 heatmap.attr('data', ""); // clear passed data
 // Render original image
 
-var heatmapImage = heatmap.append("svg:image").attr("xlink:href", "../img/main.jpg").attr('class', 'img-fluid'); // Render heatmap overlay
-
-var overlay = heatmap.append("svg").attr('class', 'overlay').attr('x', 0).attr('y', 0);
+var heatmapImage = heatmap.append("svg:image").attr("xlink:href", "../img/main.jpg").attr('class', 'img-fluid');
 /* Toggles and Controls */
 // Detector Selection Dropdown
 
@@ -94,12 +92,20 @@ valueSelect.property("value", valueDefault);
 function update(name) {
   // $('#test').text(JSON.stringify(data[value], null, 2));
   var detectorValues = data[name];
+
+  if ($(".overlay").length) {
+    // clear old heatmap
+    d3.select(".overlay").remove();
+  }
+
   updateHeatmap(detectorValues);
 } // Get data for heatmap overlay
 
 
 function updateHeatmap(values) {
-  // Get coordinates as data arrays
+  // Render heatmap overlay
+  var overlay = heatmap.append("svg").attr('class', 'overlay').attr('x', 0).attr('y', 0); // Get coordinates as data arrays
+
   var xCoords = values.map(value => {
     return parseFloat(value.coords.x);
   }).sort();
@@ -141,13 +147,11 @@ function updateHeatmap(values) {
   var getColor = d3.scaleSequential().interpolator(getElementColor(data.type.abbreviation)).domain([0, max.rel]); // X Scale
 
   var xScale = d3.scaleLinear().domain([min.x, max.x]).range([0, overlayWidth]);
-  var xAxisGen = d3.axisBottom().scale(xScale); // .ticks(10);
-
+  var xAxisGen = d3.axisBottom().scale(xScale);
   var xAxis = overlay.append("g").call(xAxisGen).attr('class', 'axis x-axis').attr("transform", "translate(".concat(overlayWidth * 2.5 + 45, ", ").concat(overlayHeight * 1.5 + 75, ")")); // Y Scale
 
   var yScale = d3.scaleLinear().domain([min.y, max.y]).range([0, overlayHeight]);
-  var yAxisGen = d3.axisLeft().scale(yScale); // .ticks(10)
-
+  var yAxisGen = d3.axisLeft().scale(yScale);
   var yAxis = overlay.append("g").call(yAxisGen).attr("transform", "translate(".concat(overlayWidth * 2.5 + 43, ", ").concat(overlayHeight - 40, ")")).attr('class', 'axis y-axis'); // Legend
 
   var legendColorScale = d3.scaleSequential(getElementColor(data.type.abbreviation)).domain([0, max.rel]);
@@ -182,10 +186,7 @@ function updateHeatmap(values) {
 
     d3.select(this).style("fill", function (d) {
       return d3.rgb(getColor(d.relative)).brighter(2);
-    }).style('opacity', 1); // if (d3.select(this).classed('value-original')) { // give border to see thinner values easier
-
-    d3.select(this).style("stroke", "red").style("stroke-width", ".5px"); // }
-    // Move legend slider
+    }).style('opacity', 1).style("stroke", d3.rgb(getElementColor(data.type.abbreviation)(1)).darker(2)).style("stroke-width", ".5px"); // Move legend slider
 
     d3.select(".legend-slider").transition().delay(25).attr("transform", "translate(".concat(legendData.scale(d.relative) + 10, ", 2)"));
   }).on("mouseout", function (d) {
@@ -194,9 +195,7 @@ function updateHeatmap(values) {
     // Remove hover effects
     d3.select(this).style("fill", function (d) {
       return getColor(d.relative);
-    }).style('opacity', opacityLevel); // if (d3.select(this).classed('value-original')) {
-
-    d3.select(this).style("stroke", "none"); // }
+    }).style('opacity', opacityLevel).style("stroke", "none");
   });
 }
 

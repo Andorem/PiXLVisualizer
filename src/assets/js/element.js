@@ -21,12 +21,6 @@ heatmap.attr('data', ""); // clear passed data
  .attr("xlink:href", "../img/main.jpg")
  .attr('class', 'img-fluid');
 
- // Render heatmap overlay
- var overlay = heatmap.append("svg")
- .attr('class', 'overlay')
- .attr('x', 0)
- .attr('y', 0)
-
 
 /* Toggles and Controls */
 
@@ -121,13 +115,20 @@ valueSelect.property("value", valueDefault);
 function update(name) {
     // $('#test').text(JSON.stringify(data[value], null, 2));
     let detectorValues = data[name];
+    if ($(".overlay").length) { // clear old heatmap
+        d3.select(".overlay").remove();
+    }
     updateHeatmap(detectorValues);
 }
 
-
-
 // Get data for heatmap overlay
 function updateHeatmap(values) {
+    
+    // Render heatmap overlay
+    var overlay = heatmap.append("svg")
+    .attr('class', 'overlay')
+    .attr('x', 0)
+    .attr('y', 0)
     
     // Get coordinates as data arrays
     let xCoords = values.map((value) => {return parseFloat(value.coords.x)}).sort();
@@ -190,8 +191,7 @@ function updateHeatmap(values) {
     .domain([min.x, max.x])
     .range([0, overlayWidth]);
     var xAxisGen = d3.axisBottom()
-        .scale(xScale)
-        // .ticks(10);
+        .scale(xScale);
     var xAxis = overlay.append("g")
     .call(xAxisGen)
     .attr('class', 'axis x-axis')
@@ -202,8 +202,7 @@ function updateHeatmap(values) {
         .domain([min.y, max.y])
         .range([0, overlayHeight]);
     var yAxisGen = d3.axisLeft()
-        .scale(yScale)
-        // .ticks(10)
+        .scale(yScale);
     var yAxis = overlay.append("g")
     .call(yAxisGen)
     .attr("transform", `translate(${overlayWidth * 2.5 + 43}, ${overlayHeight - 40})`)
@@ -280,15 +279,14 @@ function updateHeatmap(values) {
             d3.select(this).style("fill", function(d) {
                 return d3.rgb(getColor(d.relative)).brighter(2);
             })
-            .style('opacity', 1);
-            // if (d3.select(this).classed('value-original')) { // give border to see thinner values easier
-                d3.select(this).style("stroke", "red").style("stroke-width", ".5px");
-            // }
+            .style('opacity', 1)
+            .style("stroke", d3.rgb(getElementColor(data.type.abbreviation)(1)).darker(2))
+            .style("stroke-width", ".5px");
 
             // Move legend slider
             d3.select(".legend-slider")
-            .transition().delay(25)
-            .attr("transform",`translate(${legendData.scale(d.relative) + 10}, 2)`);
+                .transition().delay(25)
+                .attr("transform",`translate(${legendData.scale(d.relative) + 10}, 2)`);
       })
       .on("mouseout", function(d) { tooltip.style("display", "none"); })
       .on("mouseleave", function(d) { 
@@ -296,11 +294,8 @@ function updateHeatmap(values) {
             d3.select(this).style("fill", function(d) {
                 return getColor(d.relative);
             })
-            .style('opacity', opacityLevel);
-            
-            // if (d3.select(this).classed('value-original')) {
-                d3.select(this).style("stroke", "none");
-            // }
+                .style('opacity', opacityLevel)
+                .style("stroke", "none");
         });
    
 }
