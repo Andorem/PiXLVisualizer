@@ -1,7 +1,7 @@
 <h1>{{header}}</h1>
 <div class="tab-content w-100">
     <div class="tab-pane fade show active" id="heatmap" role="tabpanel">
-        <div class=" d-flex flex-column align-items-center">
+        {{!-- <div class=" d-flex flex-column align-items-center">
             <div id="detector-dropdown-group" class="btn-group">
                 <button class="btn btn-secondary btn-lg dropdown-toggle d-flex align-items-center" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true">
@@ -18,7 +18,7 @@
            <div id="heatmap-zoom" class="w-50 mb-2 text-center">
                 <label for="heatmap-zoom-slider" class="text-secondary mb-0">Zoom Level</label>
                 <form id="heatmap-zoom-form" class="form-inline flex-lg-nowrap">
-                    <input class="custom-range p-1" type="range" name="zoomSlider" min="0" max="100" value="0" oninput="this.form.zoomInput.value=this.value">
+                    <input class="custom-range p-1" type="range" orient="vertical" name="zoomSlider" min="0" max="100" value="0" oninput="this.form.zoomInput.value=this.value">
                     <input class="form-control p-1 text-center" type="number" name="zoomInput" min="0" max="100" value="0" oninput="this.form.zoomSlider.value=this.value">
                 </form>
             </div>
@@ -26,6 +26,52 @@
             <div id="heatmap-wrapper" class="d-inline-block w-75 bg-light">
                 <svg id="heatmap-svg" viewBox="0 0 752 580" data="{{#base64 data}}{{/base64}}">
                 </svg>
+            </div>
+        </div> --}}
+        <div class="row">
+            <div class="col-sm p-0 pt-2 d-flex flex-column">
+                <div id="detector-dropdown-group" class="btn-group align-self-center" style="">
+                        <button class="btn btn-secondary btn-lg dropdown-toggle d-flex align-items-center" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true">
+                            </span><span class="detector-label">Detector</span>
+                        </button>
+                         <div id="detector-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {{#each data}}
+                            {{#ifnoteq @key "type" }}
+                            <a class="dropdown-item" href="#" data="{{@key}}">Detector {{@key}}</a>
+                            {{/ifnoteq}}
+                            {{/each}}
+                        </div>
+                    </div>
+                <div id="heatmap-zoom" class="mb-2 text-center">
+                        <label for="heatmap-zoom-slider" class="text-secondary mb-0">Zoom Level</label>
+                        <form id="heatmap-zoom-form" class="form-inline flex-lg-nowrap">
+                            <input class="custom-range p-1" type="range" name="zoomSlider" min="0" max="10" value="2.00" oninput="this.form.zoomInput.value=this.value">
+                            <input class="form-control p-1 text-center w-25 m-auto" type="number" name="zoomInput" min="0" max="10" value="2.00" oninput="this.form.zoomSlider.value=this.value">
+                        </form>
+                </div>
+                  <div id="heatmap-opacity" class="mb-2 text-center">
+                        <label for="heatmap-opacity-slider" class="text-secondary mb-0">Opacity Level</label>
+                        <form id="heatmap-opacity-form" class="form-inline flex-lg-nowrap">
+                            <input class="custom-range p-1" type="range" name="opacitySlider" min="0" max="1" value="0.6" oninput="this.form.opacityInput.value=this.value">
+                            <input class="form-control p-1 text-center w-25 m-auto" type="number" name="opacityInput" min="0" max="1" value="0.6" oninput="this.form.opacitySlider.value=this.value">
+                        </form>
+                </div>
+                <div id="heatmap-values" class="mb-2 text-center">
+                    <label for="heatmap-values-input" class="text-secondary mb-0">Data Value Type</label>
+                    <select class="custom-select">
+                        <option value="relative">Relative</option>
+                        <option value="original">Original</option>
+                    </select>
+                </div>
+
+            </div>
+                
+                <div class="col-9 ml-2 p-2 border-left">  
+                   <div id="heatmap-wrapper" class="d-inline-block w-100 bg-light">
+                <svg id="heatmap-svg" viewBox="0 0 752 580" data="{{#base64 data}}{{/base64}}">
+                </svg>
+             </div>
             </div>
         </div>
     </div>

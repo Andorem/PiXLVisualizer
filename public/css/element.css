@@ -22,3 +22,6 @@
   border-radius: 5px;
   pointer-events: none;
   box-shadow: 2px 2px 4px #323232; }
+
+.axis {
+  font-size: 5px; }

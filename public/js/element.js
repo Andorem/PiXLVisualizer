@@ -2,7 +2,16 @@
 
 var width = 752;
 var height = 580;
-var zoomDefault = 2;
+var zoomDefault = 2,
+    zoomLevel = zoomDefault;
+var opacityDefault = .6,
+    opacityLevel = opacityDefault;
+var valueTypes = {
+  "original": 1,
+  "relative": 2.5
+};
+var valueDefault = "relative",
+    valueWidth = valueTypes[valueDefault];
 var heatmap = d3.select('#heatmap-svg');
 var data = JSON.parse(atob(heatmap.attr("data")));
 heatmap.attr('data', ""); // clear passed data
@@ -16,7 +25,8 @@ var overlay = heatmap.append("svg").attr('class', 'overlay').attr('x', 0).attr('
 
 var detectorSpinner = $("#detector-dropdown-group .spinner-border");
 var detectorLabel = $('#detector-dropdown-group button .detector-label');
-var detectorButton = $('#detector-dropdown-group button');
+var detectorButton = $('#detector-dropdown-group button'); // Render heatmap on dropdown selection
+
 $(document).ready(function () {
   $("#detector-dropdown a").click(function (e) {
     e.preventDefault();
@@ -41,16 +51,43 @@ var zoomAction = d3.zoom().scaleExtent([1, 10]).translateExtent([[-1 * width, -1
 });
 heatmap.call(zoomAction); // Zoom Range Slider
 
-zoomSlider.attr("value", zoomAction.scaleExtent()[0]).attr("min", zoomAction.scaleExtent()[0]).attr("max", zoomAction.scaleExtent()[1]).attr("step", (zoomAction.scaleExtent()[1] - zoomAction.scaleExtent()[0]) / 100).on("input", rangeSlideAction);
+zoomSlider.attr("min", zoomAction.scaleExtent()[0]).attr("max", zoomAction.scaleExtent()[1]).attr("step", (zoomAction.scaleExtent()[1] - zoomAction.scaleExtent()[0]) / 100).on("input", rangeSlideAction);
 
 function rangeSlideAction(d) {
-  var zoomLevel = d3.select(this).property("value");
+  zoomLevel = d3.select(this).property("value");
   zoomAction.scaleTo(heatmap, d3.select(this).property("value"));
 } // Zoom Defaults
 
 
 zoomSlider.property("value", zoomDefault);
 zoomAction.scaleTo(heatmap, zoomDefault);
+/* Opacity Functionality */
+// Opacity Slider
+
+var opacitySlider = d3.selectAll("#heatmap-opacity-form input");
+opacitySlider.attr("min", 0).attr("max", 1).attr("step", .1).on("input", opacitySlideAction);
+
+function opacitySlideAction(d) {
+  opacityLevel = d3.select(this).property("value");
+  d3.selectAll('.heatmap-data').style('opacity', opacityLevel);
+} // Opacity Defaults
+
+
+opacitySlider.property("value", opacityDefault);
+d3.selectAll('.heatmap-data').style('opacity', opacityDefault);
+/* Data Value Type Functionality */
+// Data Value Type Select
+
+var valueSelect = d3.selectAll("#heatmap-values select");
+valueSelect.property("value", valueDefault).on("input", valueSelectAction);
+
+function valueSelectAction(d) {
+  valueWidth = valueTypes[d3.select(this).property("value")];
+  d3.selectAll('.heatmap-data').attr('width', valueWidth);
+} // Opacity Defaults
+
+
+valueSelect.property("value", valueDefault);
 
 function update(name) {
   // $('#test').text(JSON.stringify(data[value], null, 2));
@@ -93,7 +130,7 @@ function updateHeatmap(values) {
   var verticalCenter = (yCoords[0] + yCoords[yCoords.length - 1]) / 2; // console.log(`overlay dimensions: ${overlayHeight} = h, ${overlayWidth} = w`);
   // Heatmap Title
 
-  var title = overlay.append("text").attr("x", horizontalCenter).attr("y", yCoords[0] - 10).attr("text-anchor", "middle").style("font-size", "20px").style('fill', 'white').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, " Heatmap")); // Heatmap Tooltip 
+  var title = overlay.append("text").attr('class', 'heatmap-title').attr("x", horizontalCenter).attr("y", yCoords[0] - 10).attr("text-anchor", "middle").style("font-size", "20px").style('fill', 'white').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, " Heatmap")); // Heatmap Tooltip 
 
   var heatmapWrapper = d3.select("#heatmap-wrapper");
   var tooltip = $("#heatmap-tooltip").length ? // don't create duplicate tooltip
@@ -101,15 +138,20 @@ function updateHeatmap(values) {
 
   var getColor = d3.scaleSequential().interpolator(getElementColor(data.type.abbreviation)).domain([0, max.rel]); // X Scale
 
-  var xScale = d3.scaleBand().domain(xCoords).range([0, overlayWidth]).paddingInner(20).paddingOuter(10 / 2); // Y Scale
+  var xScale = d3.scaleLinear().domain([min.x, max.x]).range([0, overlayWidth]);
+  var xAxisGen = d3.axisBottom().scale(xScale); // .ticks(10);
 
-  var yScale = d3.scaleBand().domain(yCoords).range([0, overlayHeight]).paddingInner(.2).paddingOuter(.2); // Legend
+  var xAxis = overlay.append("g").call(xAxisGen).attr('class', 'axis x-axis').attr("transform", "translate(".concat(overlayWidth * 2.5 + 45, ", ").concat(overlayHeight * 1.5 + 75, ")")); // Y Scale
+
+  var yScale = d3.scaleLinear().domain([min.y, max.y]).range([0, overlayHeight]);
+  var yAxisGen = d3.axisLeft().scale(yScale); // .ticks(10)
+
+  var yAxis = overlay.append("g").call(yAxisGen).attr("transform", "translate(".concat(overlayWidth * 2.5 + 43, ", ").concat(overlayHeight - 40, ")")).attr('class', 'axis y-axis'); // Legend
 
   var legendColorScale = d3.scaleSequential(getElementColor(data.type.abbreviation)).domain([0, max.rel]);
 
   if ($("#heatmap-legend").length) {
     // don't create duplicate legend
-    console.log("already heatmap. delete");
     d3.select("#heatmap-legend").remove();
   }
 
@@ -119,13 +161,13 @@ function updateHeatmap(values) {
 
   var title = overlay.append("text").attr("x", xCoords[0] - 50 + "px").attr("y", overlayHeight + "px").attr("text-anchor", "middle").style("font-size", "12px").style('fill', 'black').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, "_%")); // Data Points
 
-  overlay.selectAll('rect').data(values).enter().append("rect").style("class", "heatmap-data").attr("x", function (d) {
+  overlay.selectAll('rect').data(values).enter().append("rect").attr("class", "heatmap-data").attr("x", function (d) {
     return parseFloat(d.coords.x);
   }).attr("y", function (d) {
     return parseFloat(d.coords.y);
-  }).attr("width", 2.5).attr("height", 2.5).style("fill", function (d) {
+  }).attr("width", valueWidth).attr("height", 2.5).style("fill", function (d) {
     return getColor(d.relative);
-  }).style("opacity", 0.6).on("mouseover", function (d) {
+  }).style("opacity", opacityLevel).on("mouseover", function (d) {
     tooltip.html("<b>X:</b> ".concat(d.coords.x, ", <b>Y:</b> ").concat(d.coords.y, "<br>\n                <b>Relative:</b> ").concat(d.relative, "<br>\n                <b>Absolute:</b> ").concat(d.absolute, "\n            "));
     tooltip.style("display", null).style("left", d3.mouse(heatmapWrapper.node())[0] + 20 + "px") // mouse relative to heatmap
     .style("top", d3.mouse(heatmapWrapper.node())[1] + "px").style("background-color", getColor(d.relative));
@@ -139,7 +181,7 @@ function updateHeatmap(values) {
   }).on("mouseleave", function (d) {
     d3.select(this).style("fill", function (d) {
       return getColor(d.relative);
-    }).style('opacity', .6);
+    }).style('opacity', opacityLevel);
   });
 }
 

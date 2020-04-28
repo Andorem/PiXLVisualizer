@@ -3,7 +3,14 @@
 let width = 752;
 let height = 580;
 
-let zoomDefault = 2;
+let zoomDefault = 2, zoomLevel = zoomDefault;
+let opacityDefault = .6, opacityLevel = opacityDefault;
+let valueTypes = {
+    "original": 1,
+    "relative": 2.5
+}
+let valueDefault = "relative", valueWidth = valueTypes[valueDefault];
+
 let heatmap = d3.select('#heatmap-svg');
 
 let data = JSON.parse(atob(heatmap.attr("data")));
@@ -28,6 +35,7 @@ let detectorSpinner = $("#detector-dropdown-group .spinner-border");
 let detectorLabel = $('#detector-dropdown-group button .detector-label');
 let detectorButton = $('#detector-dropdown-group button');
 
+// Render heatmap on dropdown selection
 $(document).ready(function() {
     $("#detector-dropdown a").click(function(e) {
         e.preventDefault();
@@ -59,20 +67,54 @@ var zoomAction = d3.zoom()
 heatmap.call(zoomAction);
 
 // Zoom Range Slider
-zoomSlider.attr("value", zoomAction.scaleExtent()[0])
+zoomSlider
   .attr("min", zoomAction.scaleExtent()[0])
   .attr("max", zoomAction.scaleExtent()[1])
   .attr("step", (zoomAction.scaleExtent()[1] - zoomAction.scaleExtent()[0]) / 100)
   .on("input", rangeSlideAction);
 
 function rangeSlideAction(d){
-    let zoomLevel = d3.select(this).property("value");
+    zoomLevel = d3.select(this).property("value");
     zoomAction.scaleTo(heatmap, d3.select(this).property("value"));
 }
 
 // Zoom Defaults
 zoomSlider.property("value", zoomDefault);
 zoomAction.scaleTo(heatmap, zoomDefault);
+
+/* Opacity Functionality */
+
+// Opacity Slider
+var opacitySlider = d3.selectAll("#heatmap-opacity-form input")
+opacitySlider
+  .attr("min", 0)
+  .attr("max", 1)
+  .attr("step", .1)
+  .on("input", opacitySlideAction);
+
+function opacitySlideAction(d){
+    opacityLevel = d3.select(this).property("value");
+    d3.selectAll('.heatmap-data').style('opacity', opacityLevel);
+}
+
+// Opacity Defaults
+opacitySlider.property("value", opacityDefault);
+d3.selectAll('.heatmap-data').style('opacity', opacityDefault);
+
+/* Data Value Type Functionality */
+
+// Data Value Type Select
+var valueSelect = d3.selectAll("#heatmap-values select")
+valueSelect.property("value", valueDefault)
+  .on("input", valueSelectAction);
+
+function valueSelectAction(d){
+    valueWidth = valueTypes[d3.select(this).property("value")];
+    d3.selectAll('.heatmap-data').attr('width', valueWidth);
+}
+
+// Opacity Defaults
+valueSelect.property("value", valueDefault);
 
 
 function update(name) {
@@ -116,6 +158,7 @@ function updateHeatmap(values) {
 
     // Heatmap Title
     var title = overlay.append("text")
+    .attr('class', 'heatmap-title')
     .attr("x", horizontalCenter)
     .attr("y", yCoords[0] - 10)
     .attr("text-anchor", "middle")
@@ -142,16 +185,28 @@ function updateHeatmap(values) {
     .domain([0, max.rel]);
 
     // X Scale
-    var xScale = d3.scaleBand()
-    .domain(xCoords)
-    .range([0, overlayWidth])
-    .paddingInner(20).paddingOuter(10/2);
+    var xScale = d3.scaleLinear()
+    .domain([min.x, max.x])
+    .range([0, overlayWidth]);
+    var xAxisGen = d3.axisBottom()
+        .scale(xScale)
+        // .ticks(10);
+    var xAxis = overlay.append("g")
+    .call(xAxisGen)
+    .attr('class', 'axis x-axis')
+    .attr("transform", `translate(${overlayWidth * 2.5 + 45}, ${overlayHeight * 1.5 + 75})`);
     
     // Y Scale
-    var yScale = d3.scaleBand()
-        .domain(yCoords)
-        .range([0, overlayHeight])
-        .paddingInner(.2).paddingOuter(.2);
+    var yScale = d3.scaleLinear()
+        .domain([min.y, max.y])
+        .range([0, overlayHeight]);
+    var yAxisGen = d3.axisLeft()
+        .scale(yScale)
+        // .ticks(10)
+    var yAxis = overlay.append("g")
+    .call(yAxisGen)
+    .attr("transform", `translate(${overlayWidth * 2.5 + 43}, ${overlayHeight - 40})`)
+    .attr('class', 'axis y-axis');
 
  
     // Legend
@@ -159,7 +214,6 @@ function updateHeatmap(values) {
     .domain([0, max.rel]);
 
     if ($("#heatmap-legend").length) { // don't create duplicate legend
-    console.log("already heatmap. delete");
         d3.select("#heatmap-legend").remove();
     }
     overlay.append("svg")
@@ -185,13 +239,13 @@ function updateHeatmap(values) {
     .data(values)
     .enter()
     .append("rect")
-    .style("class", "heatmap-data")
+      .attr("class", "heatmap-data")
       .attr("x", function(d) { return parseFloat(d.coords.x) ; })
       .attr("y", function(d) { return parseFloat(d.coords.y); })
-      .attr("width", 2.5)
+      .attr("width", valueWidth)
       .attr("height", 2.5)
       .style("fill", function(d) { return getColor(d.relative)} )
-      .style("opacity", 0.6) 
+      .style("opacity", opacityLevel) 
       .on("mouseover", function(d) {
             tooltip.html(`<b>X:</b> ${d.coords.x}, <b>Y:</b> ${d.coords.y}<br>
                 <b>Relative:</b> ${d.relative}<br>
@@ -214,7 +268,7 @@ function updateHeatmap(values) {
             d3.select(this).style("fill", function(d) {
                 return getColor(d.relative);
             })
-            .style('opacity', .6);
+            .style('opacity', opacityLevel);
         });
    
 }
