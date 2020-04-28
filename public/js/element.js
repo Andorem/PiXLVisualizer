@@ -96,7 +96,7 @@ function updateHeatmap(values) {
   var title = overlay.append("text").attr("x", horizontalCenter).attr("y", yCoords[0] - 10).attr("text-anchor", "middle").style("font-size", "20px").style('fill', 'white').style('font-weight', 'bold').style('stroke', 'black').text("".concat(data.type.abbreviation, " Heatmap")); // Heatmap Tooltip 
 
   var heatmapWrapper = d3.select("#heatmap-wrapper");
-  var tooltip = $("#heatmap-tooltip").length ? // don't create duplicate legend
+  var tooltip = $("#heatmap-tooltip").length ? // don't create duplicate tooltip
   d3.select("#heatmap-tooltip") : heatmapWrapper.append("div").attr("id", "heatmap-tooltip").style("display", "none"); // Heatmap Color Range
 
   var getColor = d3.scaleSequential().interpolator(d3.interpolateMagma).domain([0, max.rel]); // X Scale
@@ -106,7 +106,14 @@ function updateHeatmap(values) {
   var yScale = d3.scaleBand().domain(yCoords).range([0, overlayHeight]).paddingInner(.2).paddingOuter(.2); // Legend
 
   var legendColorScale = d3.scaleSequential(d3.interpolateMagma).domain([0, max.rel]);
-  var legend = overlay.append("svg").attr("id", "heatmap-legend");
+
+  if ($("#heatmap-legend").length) {
+    // don't create duplicate legend
+    console.log("already heatmap. delete");
+    d3.select("#heatmap-legend").remove();
+  }
+
+  overlay.append("svg").attr("id", "heatmap-legend");
   continuous("#heatmap-legend", legendColorScale);
   var legend = d3.select("#heatmap-legend").attr('y', overlayHeight + "px").attr('x', xCoords[0] - 75 + "px"); // Legend Title
 

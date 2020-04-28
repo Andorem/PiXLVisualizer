@@ -127,12 +127,14 @@ function updateHeatmap(values) {
 
     // Heatmap Tooltip 
     var heatmapWrapper = d3.select("#heatmap-wrapper");
-    var tooltip = ($("#heatmap-tooltip").length ?  // don't create duplicate legend
+    var tooltip = ($("#heatmap-tooltip").length ?  // don't create duplicate tooltip
         d3.select("#heatmap-tooltip")
         :
         heatmapWrapper.append("div")	
         .attr("id", "heatmap-tooltip")				
-        .style("display", "none"));
+        .style("display", "none")
+    );
+    
     
     // Heatmap Color Range
     var getColor = d3.scaleSequential()
@@ -152,11 +154,15 @@ function updateHeatmap(values) {
         .paddingInner(.2).paddingOuter(.2);
 
  
-// Legend
+    // Legend
     var legendColorScale = d3.scaleSequential(d3.interpolateMagma)
     .domain([0, max.rel]);
 
-    var legend = overlay.append("svg")
+    if ($("#heatmap-legend").length) { // don't create duplicate legend
+    console.log("already heatmap. delete");
+        d3.select("#heatmap-legend").remove();
+    }
+    overlay.append("svg")
         .attr("id", "heatmap-legend");
     continuous("#heatmap-legend", legendColorScale);
     var legend = d3.select("#heatmap-legend")
