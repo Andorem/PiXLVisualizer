@@ -3,9 +3,9 @@
     <div class="tab-pane fade show active" id="heatmap" role="tabpanel">
         <div class=" d-flex flex-column align-items-center">
             <div id="detector-dropdown-group" class="btn-group">
-                <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Detector
+                <button class="btn btn-secondary btn-lg dropdown-toggle d-flex align-items-center" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true">
+                    </span><span class="detector-label">Detector</span>
                 </button>
                 <div id="detector-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {{#each data}}
@@ -15,6 +15,14 @@
                     {{/each}}
                 </div>
             </div>
+           <div id="heatmap-zoom" class="w-50 mb-2 text-center">
+                <label for="heatmap-zoom-slider" class="text-secondary mb-0">Zoom Level</label>
+                <form id="heatmap-zoom-form" class="form-inline flex-lg-nowrap">
+                    <input class="custom-range p-1" type="range" name="zoomSlider" min="0" max="100" value="0" oninput="this.form.zoomInput.value=this.value">
+                    <input class="form-control p-1 text-center" type="number" name="zoomInput" min="0" max="100" value="0" oninput="this.form.zoomSlider.value=this.value">
+                </form>
+            </div>
+            
             <div id="heatmap-wrapper" class="d-inline-block w-75 bg-light">
                 <svg id="heatmap-svg" viewBox="0 0 752 580" data="{{#base64 data}}{{/base64}}">
                 </svg>
