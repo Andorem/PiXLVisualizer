@@ -27,7 +27,7 @@ export function showElementMain(req, res) {
       },
       items: {
         "Heatmap": {image: `../../img/preview/${type}/preview-heatmap.png`, link: 'heatmap'},
-        "Comparison": {image: `../../img/preview/${type}/preview-scatter.png`, link: 'compare'}
+        "Comparison": {image: `../../img/preview/${type.toLowerCase()}/preview-scatter.png`, link: 'compare'}
       }
     });
   }
