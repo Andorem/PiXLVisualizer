@@ -1,3 +1,54 @@
-.tool-imgs img {
+#main, #content {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1; }
+
+section h3 {
+  font-size: 2em; }
+
+section h4 {
+  font-size: 1.5em;
+  font-style: italic; }
+
+#intro, #team, #project-desc, #tools {
+  padding: 75px; }
+
+#main-image #main-image-wrapper {
+  background-image: url("https://moneyinc.com/wp-content/uploads/2016/06/Mars.jpg");
+  width: 100%;
+  height: 400px;
+  background-size: cover; }
+
+#main-image h3, #main-image h4 {
+  color: white;
+  font-weight: bold; }
+
+#intro {
+  background-color: #111111;
+  color: white;
+  font-size: 1.25em; }
+  #intro blockquote {
+    margin-bottom: 0; }
+
+#team {
+  background-color: teal;
+  color: white;
+  font-weight: bold;
+  text-align: center; }
+  #team h3 {
+    margin-bottom: 20px; }
+  #team ul {
+    list-style: none;
+    padding: 0;
+    font-size: 1.25em; }
+
+#tools .tool-imgs img {
   max-width: 100%;
   height: 200px; }
+
+#tools .tool-label {
+  padding: 10px;
+  display: block;
+  text-align: center; }

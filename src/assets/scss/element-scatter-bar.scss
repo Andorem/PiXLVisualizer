@@ -4,21 +4,27 @@
 
 #heatmap-wrapper {
     overflow: hidden;
+
+    .heatmap-selection-button {
+        top: 50px !important;
+    }
 }
 
-#heatmap {
+.heatmap-mini {
     padding-top: 50px;
     padding-left: 10px;
 
+
+
+}
     .selection {
         stroke: red;
-        stroke-dasharray: 4px;
+        stroke-width: .05px;
         stroke-opacity: 0.5;
-        fill: transparent;
+        fill: red;
+        opacity: .5;
     }
-
-      .selected {
-        stroke: red;
-        stroke-width:0.5px;   
-      }
-}
+.selected {
+    fill: red !important;
+    opacity: .5 !important;
+  }

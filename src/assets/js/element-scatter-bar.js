@@ -22,8 +22,20 @@ let scatter = scatterWrapper.append("svg").attr("id", "scatter-svg")
 
 let barchart, barWrapper = d3.select('#bar-wrapper');
 
-mainData = JSON.parse(atob(scatterWrapper.attr("data-element")));
-let miniHeatmap = new MiniHeatmap(100, "#heatmap", mainData, "A", 3);
+let originalData = JSON.parse(atob(scatterWrapper.attr("data-element")));
+mainData = originalData;
+
+let miniHeatmap = new MiniHeatmap({
+    width: 100,
+    wrapperId: "#heatmap-wrapper",
+    data: mainData,
+    detector: "A",
+    scale: 3
+    }, (data, clear) => {
+        if (clear) update(detectorName);
+        else update(detectorName, true, data);
+    }
+);
 
 // Defaults
 let detectorName = 'A';
@@ -84,7 +96,6 @@ function compareSelectAction(d) {
         setCompareElement(data);
         isLoading = false;
         updateScatterplot(mainValues, compareValues);
-        miniHeatmap.update(mainValues);
         enableControls();
     });
 }
@@ -132,17 +143,27 @@ function selectBrushRegion() {
         if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
         x.domain(d3.extent(scatterData, function (d) { return d.compareValue.relative; })).nice();
         y.domain(d3.extent(scatterData, function (d) { return d.mainValue.relative; })).nice();
+        // miniHeatmap.clearSelected();
     }
     else {
         x.domain([selectedRegion[0][0], selectedRegion[1][0]].map(x.invert, x));
         y.domain([selectedRegion[1][1], selectedRegion[0][1]].map(y.invert, y));
         scatter.select(".brush-overlay").call(brush.move, null);
     }
+    // miniHeatmap.updateSelected(getSelectedData());
     zoomToBrushRegion();
 }
 
 function idled() {
     idleTimeout = null;
+}
+
+function getSelectedData() {
+    let k = brush.extent();
+    let j = scatterData.filter(function(d){
+        return k[0] <= d.mainValue && k[1] >=d.compareValue;
+    }).map((d) => d.mainValue)
+    return j;
 }
 
 function zoomToBrushRegion() {
@@ -165,22 +186,22 @@ let brushRegion = scatter.append("defs").append("svg:clipPath")
 .attr("y", 0); 
 
 // Only show data within brush region
-scatter.append("g")
+let scatterDataRegion = scatter.append("g")
 .attr("id", "scatter-data")
 .attr("clip-path", "url(#brush-region)");
 
 // Brush overlay
-scatter.append("g")
+let brushOverlay = scatter.append("g")
 .attr("class", "brush-overlay")
 .call(brush);
 
-function update(name) {
+function update(name, newData=false, data) {
     detectorName = name;
-    mainValues = mainData[detectorName];
+    mainValues = (newData ? data : mainData[detectorName]);
     compareValues = compareData[detectorName];
     isLoading = false;
     updateScatterplot(mainValues, compareValues);
-    miniHeatmap.update(mainValues);
+    if (!newData) miniHeatmap.update(mainValues);
 }
 
 function setMainElement(data) {
@@ -271,8 +292,8 @@ function updateScatterplot(mainValues, compareValues) {
     yLabel.text(`${mainData.type.abbreviation}_%`);
 
     // Add dots
-    d3.select("#scatter-data")
-        .selectAll(".scatter-data-value")
+    scatterDataRegion
+        .selectAll(".scatter-data")
         .data(scatterData)
         .enter()
         .append("circle")
@@ -283,4 +304,8 @@ function updateScatterplot(mainValues, compareValues) {
         .style("stroke-width", 1)
         .style("fill", "none")
         .style("stroke", getElementColor(mainData.type.abbreviation)(1));
+
 }
+
+
+update(detectorName);

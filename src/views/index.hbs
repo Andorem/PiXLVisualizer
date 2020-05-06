@@ -1,75 +1,72 @@
-<h1>{{header}}</h1>
-<div class="tab-content w-100">
-    <div class="tab-pane fade show active" id="about" role="tabpanel">
-        <section>
-            <h3>PiXL visualization built with Node.js and d3.js using MVC architecture</h3>
-             <div class="d-flex flex-direction-row justify-content-center align-items-center">
-            <blockquote class="blockquote bg-light rounded p-2 ml-2 border border-secondary w-75" style="font-size: 1em; font-style: italic">
-            The PIXL (Planetary Instrument for X-ray Lithochemistry) for the Perseverance rover is a microfocus X-ray fluorescence instrument that rapidly measures elemental chemistry at sub-millimeter scales by focusing an X-ray beam to a tiny spot on the target rock or soil and analyzing the induced X-ray fluorescence.
-            <footer class="blockquote-footer">NASA Mars 2020</footer> 
+<section id="main-image">
+    <div id="main-image-wrapper" class="d-flex flex-column justify-content-center align-items-center">
+        <h3>PiXL Visualizer</h3>
+        <h4>Interactive data visualization built with Node.js and d3.js</h4>
+    </div>
+</section>
+<section id="intro">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <blockquote class="blockquote w-75" style="font-size: 1em; font-style: italic">
+            <p class="quote">
+                The PIXL (Planetary Instrument for X-ray Lithochemistry) for the Perseverance rover is a microfocus
+                X-ray fluorescence instrument that rapidly measures elemental chemistry at sub-millimeter scales by
+                focusing an X-ray beam to a tiny spot on the target rock or soil and analyzing the induced X-ray
+                fluorescence.
+            </p>
+            <footer class="blockquote-footer">NASA Mars 2020</footer>
         </blockquote>
-             </div>
-        <div class="d-flex flex-direction-row">
-<img src="https://mars.nasa.gov/system/resources/detail_files/8223_nasa-mars-2020-rover-arm-extended_9k_still-1200.jpg" class="img-thumbnail m-2" style="width: 350px">
-
-      <div id="project-desc" style="font-size: 1.15em">
-<p>
-Using the data obtained via the PiXL's sensitive X-Ray equipment, this project explores the spatial and chemical features of Mars' planetary composition.</p>
-<p>
-Built with a Node.js REST API backend that converts the raw data into an accessible JSON format, interactive visualization views of the data are achieved with the d3.js library.
-      </p> 
-      </div> 
-      
-         
-        </div>   
-        
-        </section>
-        <section class="mt-1">
-            <h3>Team Members</h3>
-            <ul>
-                <li>Tommy Avetisyan</li>
-                <li>Henry Dinh</li>
-                <li>Kyle Felkel</li>
-                <li>Alexis Siguenza</li>
-                <li>Elvis Ventura</li>
-            </ul>
-        </section>
-
-
-        
-        <h3>
     </div>
-    <div class="tab-pane fade" id="tools" role="tabpanel">
-        <h2>Tools Used</h2>
-        <div class="tool-imgs row">
-<div class="col-auto">
-<img src="https://miro.medium.com/max/365/1*d2zLEjERsrs1Rzk_95QU9A.png">
- </div>
-
-                <div class="col-sm">
- <img src="https://raw.githubusercontent.com/d3/d3-logo/master/d3.png">
-                </div>
-
-                  <div class="col-sm">
-<img src="https://cdn.tutsplus.com/net/uploads/legacy/2143_handlebars/handlebars-thumb.jpg">
-                </div> 
-
-           
-                <div class="col-sm"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Bootstrap_logo.svg/512px-Bootstrap_logo.svg.png"></div>
-            </div>
- 
-        
-                
-            <ul>
-            <li>Node.js</li>
-            <li>d3.js</li>
-            <li>Express</li>
-            <li>Handlebars</li>
-            <li>Bootstrap</li>
-        </ul>
-              
-                   
+</section>
+<section id="project-desc">
+    <h3>About The Project</h3>
+    <div class="d-flex flex-direction-row">
+        <img src="https://mars.nasa.gov/system/resources/detail_files/8223_nasa-mars-2020-rover-arm-extended_9k_still-1200.jpg"
+            class="img-thumbnail mr-5" style="width: 350px">
+        <div class="description">
+            <p>
+                Using the data obtained via the PiXL's sensitive X-Ray equipment, this project explores the spatial
+                and chemical features of Mars' planetary composition.</p>
+            <p>
+                Built with a Node.js REST API backend that converts the raw data into an accessible JSON format,
+                interactive visualization views of the data are achieved with the d3.js library.
+            </p>
         </div>
-       
+
     </div>
- </div>
+</section>
+<section id="team">
+    <h3>Team Members</h3>
+    <ul>
+        <li>Tommy Avetisyan</li>
+        <li>Henry Dinh</li>
+        <li>Kyle Felkel</li>
+        <li>Alexis Siguenza</li>
+        <li>Elvis Ventura</li>
+    </ul>
+</section>
+<section id="tools">
+    <h3>Tools Used</h3>
+    <div class="tool-imgs row">
+        <div class="col-auto">
+            <img src="https://miro.medium.com/max/365/1*d2zLEjERsrs1Rzk_95QU9A.png">
+            <span class="tool-label">Node.js and Express</span>
+        </div>
+
+        <div class="col-sm">
+            <img src="https://raw.githubusercontent.com/d3/d3-logo/master/d3.png">
+            <span class="tool-label">d3.js</span>
+        </div>
+
+        <div class="col-sm">
+            <img src="https://cdn.tutsplus.com/net/uploads/legacy/2143_handlebars/handlebars-thumb.jpg">
+            <span class="tool-label">Handlebars template engine</span>
+        </div>
+
+
+        <div class="col-sm">
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Bootstrap_logo.svg/512px-Bootstrap_logo.svg.png">
+            <span class="tool-label">Bootstrap 4</span>
+        </div>
+    </div>
+</section>

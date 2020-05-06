@@ -3,15 +3,20 @@
 
 #heatmap-wrapper {
   overflow: hidden; }
+  #heatmap-wrapper .heatmap-selection-button {
+    top: 50px !important; }
 
-#heatmap {
+.heatmap-mini {
   padding-top: 50px;
   padding-left: 10px; }
-  #heatmap .selection {
-    stroke: red;
-    stroke-dasharray: 4px;
-    stroke-opacity: 0.5;
-    fill: transparent; }
-  #heatmap .selected {
-    stroke: red;
-    stroke-width: 0.5px; }
+
+.selection {
+  stroke: red;
+  stroke-width: .05px;
+  stroke-opacity: 0.5;
+  fill: red;
+  opacity: .5; }
+
+.selected {
+  fill: red !important;
+  opacity: .5 !important; }

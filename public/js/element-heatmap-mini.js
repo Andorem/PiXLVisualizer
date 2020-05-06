@@ -1,27 +1,32 @@
 "use strict";
 
 class MiniHeatmap {
-  constructor(width, id, data, detector, scale) {
-    this.width = width;
+  constructor(params, callback) {
+    this.width = params.width;
     this.height = 580 / 752 * this.width;
-    this.detector = detector;
-    this.scale = scale;
+    this.detector = params.detector;
+    this.scale = params.scale;
     this.opacityDefault = .6;
     this.opacityLevel = this.opacityDefault;
     this.valueTypes = {
       "original": .4,
-      "relative": 2.5
+      "relative": 1
     };
     this.valueDefault = "original";
     this.valueWidth = this.valueTypes[this.valueDefault];
     this.valueType = this.valueDefault;
-    this.heatmap = d3.select(id).attr("transform", "scale(".concat(this.scale, ")"));
-    this.data = data;
+    this.wrapperId = params.wrapperId;
+    this.wrapper = d3.select(this.wrapperId);
+    this.heatmap = this.wrapper.append("svg").attr("class", "heatmap-mini").attr("viewBox", "0 0 ".concat(this.width, " ").concat(this.width)).attr("transform", "scale(".concat(this.scale, ")"));
+    this.data = params.data;
+    this.callback = callback.bind(this); // function to be called when data is selected
+
     this.init();
   }
 
   init() {
     this.renderImage();
+    this.renderSelectionButton();
     this.update(this.data[this.detector]);
   }
 
@@ -30,10 +35,26 @@ class MiniHeatmap {
     this.heatmapImage = this.heatmap.append("svg:image").attr("xlink:href", "../../img/main.jpg").attr('class', 'img-fluid').attr('width', this.width);
   }
 
+  renderSelectionButton() {
+    this.selectionButton = this.wrapper.append("button").attr("class", "heatmap-selection-button btn btn-primary btn-sm rounded align-items-center").attr("type", "button").style("position", "absolute").style("left", "0").style("top", "0").style("z-index", "999").style("margin", "10px").style("opacity", ".75").style("display", "none").html("<span class='button-label'>Clear Selection</span>").on("mouseover", () => {
+      this.selectionButton.style("opacity", 1);
+    }).on("mouseleave", () => {
+      this.selectionButton.style("opacity", .75);
+    }).on("click", () => {
+      this.callback(this.data, true);
+      this.selectionButton.style("display", "none");
+      d3.selectAll('.selected').classed("selected", false);
+    });
+  }
+
   update(values) {
-    if ($("".concat(this.id, " .overlay")).length) {
+    if ($("".concat(this.wrapperId, " .heatmap-mini .overlay")).length) {
       // clear old heatmap
-      d3.select("".concat(this.id, " .overlay")).remove();
+      d3.select("".concat(this.wrapperId, " .heatmap-mini .overlay")).remove();
+    }
+
+    if (!d3.selectAll('.data-selection.selected').empty()) {
+      this.selectionButton.style("display", "block");
     } // Render heatmap overlay
 
 
@@ -98,7 +119,7 @@ class MiniHeatmap {
       }
 
       var p = d3.mouse(this);
-      overlay.append("rect").attr('rx', 0).attr('ry', 0).attr('class', 'selection').attr('x', p[0]).attr('y', p[1]).attr('width', .25).attr('height', .25);
+      overlay.append("rect").attr('rx', 0).attr('ry', 0).attr('class', 'selection').attr('x', p[0]).attr('y', p[1]).attr('width', .05).attr('height', .05);
     }).on("mousemove", function () {
       var selection = overlay.select("rect.selection");
 
@@ -132,22 +153,37 @@ class MiniHeatmap {
         selection.attr('x', parseInt(selection.attr("x"), 10)).attr('y', parseInt(selection.attr("y"), 10)).attr('width', parseInt(selection.attr("width"), 10)).attr('height', parseInt(selection.attr("height"), 10));
         d3.selectAll('.data-selection.selected').classed("selected", false);
         d3.selectAll('.heatmap-data').filter(function (cell_d, i) {
-          console.log(this.x);
-          console.log(this.y);
-
           if (!d3.select(this).classed("data-selection") && this.x.baseVal.value >= d.x && this.x.baseVal.value <= d.x + d.width && this.y.baseVal.value >= d.y && this.y.baseVal.value <= d.y + d.height) {
             d3.select(this).classed("data-selection", true).classed("selected", true);
-            console.log("select");
           }
         });
       }
-    }).on("mouseup", function () {
+    }).on("mouseup", () => {
       overlay.selectAll("rect.selection").remove();
       d3.selectAll('.data-selection').classed("data-selection", false);
-    }).on("mouseout", function () {
-      overlay.selectAll("rect.selection").remove();
+      this.selectionButton.style("display", "block");
+      this.callback(d3.selectAll('.selected').data(), false);
+    }).on("mouseout", () => {
+      // overlay.selectAll("rect.selection").remove();
       d3.selectAll('.data-selection').classed("data-selection", false);
     });
+  }
+
+  updateSelected(selectedData) {
+    console.log("selected data:");
+    console.log(selectedData);
+    d3.selectAll('.data-selection').classed("data-selection", false);
+    d3.selectAll('.selected').classed("selected", false);
+    d3.selectAll('.heatmap-data').filter(function (d) {
+      if (selectedData.indexOf(d) != -1) {
+        d3.select(this).classed("selected", true);
+      }
+    });
+  }
+
+  clearSelected() {
+    this.selectionButton.style("display", "none");
+    d3.selectAll('.selected').classed("selected", false);
   }
 
 }

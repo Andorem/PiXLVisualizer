@@ -25,8 +25,17 @@ var scatterWrapper = d3.select('#scatter-wrapper');
 var scatter = scatterWrapper.append("svg").attr("id", "scatter-svg").attr("width", scatterWidth + margin.left + margin.right).attr("height", scatterHeight + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 var barchart,
     barWrapper = d3.select('#bar-wrapper');
-mainData = JSON.parse(atob(scatterWrapper.attr("data-element")));
-var miniHeatmap = new MiniHeatmap(100, "#heatmap", mainData, "A", 3); // Defaults
+var originalData = JSON.parse(atob(scatterWrapper.attr("data-element")));
+mainData = originalData;
+var miniHeatmap = new MiniHeatmap({
+  width: 100,
+  wrapperId: "#heatmap-wrapper",
+  data: mainData,
+  detector: "A",
+  scale: 3
+}, (data, clear) => {
+  if (clear) update(detectorName);else update(detectorName, true, data);
+}); // Defaults
 
 var detectorName = 'A';
 var isLoading = false;
@@ -83,7 +92,6 @@ function compareSelectAction(d) {
     setCompareElement(data);
     isLoading = false;
     updateScatterplot(mainValues, compareValues);
-    miniHeatmap.update(mainValues);
     enableControls();
   });
 }
@@ -117,18 +125,27 @@ function selectBrushRegion() {
     })).nice();
     y.domain(d3.extent(scatterData, function (d) {
       return d.mainValue.relative;
-    })).nice();
+    })).nice(); // miniHeatmap.clearSelected();
   } else {
     x.domain([selectedRegion[0][0], selectedRegion[1][0]].map(x.invert, x));
     y.domain([selectedRegion[1][1], selectedRegion[0][1]].map(y.invert, y));
     scatter.select(".brush-overlay").call(brush.move, null);
-  }
+  } // miniHeatmap.updateSelected(getSelectedData());
+
 
   zoomToBrushRegion();
 }
 
 function idled() {
   idleTimeout = null;
+}
+
+function getSelectedData() {
+  var k = brush.extent();
+  var j = scatterData.filter(function (d) {
+    return k[0] <= d.mainValue && k[1] >= d.compareValue;
+  }).map(d => d.mainValue);
+  return j;
 }
 
 function zoomToBrushRegion() {
@@ -145,17 +162,19 @@ function zoomToBrushRegion() {
 
 var brushRegion = scatter.append("defs").append("svg:clipPath").attr("id", "brush-region").append("svg:rect").attr("width", scatterWidth).attr("height", scatterHeight).attr("x", 0).attr("y", 0); // Only show data within brush region
 
-scatter.append("g").attr("id", "scatter-data").attr("clip-path", "url(#brush-region)"); // Brush overlay
+var scatterDataRegion = scatter.append("g").attr("id", "scatter-data").attr("clip-path", "url(#brush-region)"); // Brush overlay
 
-scatter.append("g").attr("class", "brush-overlay").call(brush);
+var brushOverlay = scatter.append("g").attr("class", "brush-overlay").call(brush);
 
 function update(name) {
+  var newData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var data = arguments.length > 2 ? arguments[2] : undefined;
   detectorName = name;
-  mainValues = mainData[detectorName];
+  mainValues = newData ? data : mainData[detectorName];
   compareValues = compareData[detectorName];
   isLoading = false;
   updateScatterplot(mainValues, compareValues);
-  miniHeatmap.update(mainValues);
+  if (!newData) miniHeatmap.update(mainValues);
 }
 
 function setMainElement(data) {
@@ -252,9 +271,11 @@ function updateScatterplot(mainValues, compareValues) {
 
   yLabel.text("".concat(mainData.type.abbreviation, "_%")); // Add dots
 
-  d3.select("#scatter-data").selectAll(".scatter-data-value").data(scatterData).enter().append("circle").attr("cx", function (d) {
+  scatterDataRegion.selectAll(".scatter-data").data(scatterData).enter().append("circle").attr("cx", function (d) {
     return x(d.compareValue.relative);
   }).attr("cy", function (d) {
     return y(d.mainValue.relative);
   }).attr("r", 4).style("opacity", .5).style("stroke-width", 1).style("fill", "none").style("stroke", getElementColor(mainData.type.abbreviation)(1));
 }
+
+update(detectorName);
