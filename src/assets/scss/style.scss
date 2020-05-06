@@ -23,6 +23,13 @@ a {
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
     background-color: teal;
 }
+.detector-dropdown-group {
+    display: block;
+    margin-bottom: 10px;
+    .spinner-border {
+        display: none;
+    }
+}
 .dropdown-hover {
     .dropdown-toggle::after {
         transition: .2s all ease;
@@ -71,6 +78,9 @@ header {
 }
 main {
     min-height: 400px;
+    h1 {
+        text-align: center;
+    }
     h1, h2 {
         margin-bottom: 15px;
     }
@@ -81,5 +91,13 @@ footer {
     h1 {
         color: lightgray;
         font-size: .75em;
+    }
+    .icon {
+        i {
+            color: white;
+        }
+        &:hover i {
+            color: lightgray;
+        }
     }
 }

@@ -1,33 +1,113 @@
-#detector-dropdown-group {
-    display: block;
-    margin-bottom: 10px;
-    .spinner-border {
-        display: none;
-    }
-}
+@import url('https://fonts.googleapis.com/css?family=Tajawal');
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
-#heatmap-wrapper {
+.item-wrapper {
+    margin: 0;
     position: relative;
-    overflow: hidden;
-}
+    display: inline-block;
+    padding-bottom: 5%;
+    
+    span {
+        color: teal;
+    }
 
-#heatmap-tooltip {	
-    position: absolute;		
-    text-align: left;		
-    min-width: 40px;					
-    height: auto;					
-    padding: 5px;			
-    font: 12px sans-serif;		
-    background: dimgray;	
-    color: white;
-    font-weight: bold;
-    border: 0px;		
-    border-radius: 5px;			
-    pointer-events: none;
-    // text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; /* Border */
-    box-shadow: 2px 2px 4px rgba(50, 50, 50, 1);
-}
+    .preview {
+        height: 200px;
+        width: 400px;
+        display: block;
+        position: relative;
+    }
 
-.axis {
-    font-size: 5px;
+    .hover-wrapper {
+        border: 10px solid gray;
+        transition: .3s all ease;
+    }
+    .hover-wrapper {
+        height: 100%;
+        top: 9.5%;
+        bottom: 35.5%;
+        left: 12.5%;
+        right: 11.5%;
+        border-radius: 10px;
+        position: absolute;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        display: block;
+        background-color: #565656;
+        overflow: hidden;
+        transition: .3s all ease;
+    }
+
+    .preview-image {
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-size: 100%;
+        background-position-y: 0%;
+        background-position-x: center;
+        position: absolute;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        display: block;
+        background-color: #565656;
+        transition: .3s all ease;
+
+    }
+
+    .hover-name {
+        background-color: teal;
+        color: #efefef;
+        position: absolute;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 100%;
+        padding: 12px 6px;
+        top: -50px;
+        text-transform: uppercase;
+        text-align: center;
+        display: block;
+        left: 0;
+        right: 0;
+        width: 100%;
+        transition: top .4s;
+        font-family: montserrat,Helvetica,Arial,sans-serif;
+    }
+
+    .hover-icon {
+        position: absolute;
+        left: 50%;
+        margin-left: -35px;
+        top: 50%;
+        color: rgba(255,255,255,.8);
+        background-color: rgba(255,255,255,.3);
+        width: 70px;
+        text-align: center;
+        line-height: 70px;
+        font-size: 30px;
+        height: 70px;
+        border-radius: 100%;
+        transition: all .5s;
+        opacity: 0;
+        transform: scale(1.5);
+    }
+
+    .hover-trigger:hover {
+        .hover-wrapper {
+            border-color: teal;
+        }
+        .preview-image {
+            background-size: 110%;
+            filter: brightness(.5);
+        }
+        .hover-name {
+            top:-1px;
+        }
+        .hover-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+	
 }

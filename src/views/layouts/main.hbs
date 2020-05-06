@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="/css/style.css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="/css/{{view}}.css" media="screen" charset="utf-8">
 
+    <!-- Javascript -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
+<script src='https://d3js.org/d3.v4.min.js'></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="/js/utils/continuousLegend.js"></script>
+<script src="/js/utils/elementColors.js"></script>
+
     <title>{{#if title}}{{title}}{{else}}COMP 584 Project{{/if}}</title>
 
 </head>
@@ -24,7 +33,7 @@
                         <ul class="nav flex-column">
                             {{#each nav}}
                                 <li class="nav-item">
-                                    <a data-toggle="pill" id="nav-{{#lowercase @key}}{{~/lowercase~}}"
+                                    <a {{#if this.tab}}data-toggle="pill"{{~/if}} id="nav-{{#lowercase @key}}{{~/lowercase~}}"
                                     class="nav-link {{#if this.active}} active
                                         {{~else if this.disabled}} disabled
                                         {{~/if~}}"
@@ -39,8 +48,7 @@
                 {{/if}}
 
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                    <div
-                        class="d-flex flex-column justify-content-center flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="pt-3 pb-2 mb-3 border-bottom">
                         {{{body}}}
                     </div>
                 </main>
@@ -49,14 +57,6 @@
     {{> footer }}
 </body>
 
-<!-- Javascript -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous"></script>
-<script src='https://d3js.org/d3.v4.min.js'></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script src="/js/utils/continuousLegend.js"></script>
-<script src="/js/utils/elementColors.js"></script>
 <script src="/js/{{view}}.js"></script>
 
 </html>

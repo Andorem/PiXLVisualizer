@@ -21,6 +21,12 @@ a {
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   background-color: teal; }
 
+.detector-dropdown-group {
+  display: block;
+  margin-bottom: 10px; }
+  .detector-dropdown-group .spinner-border {
+    display: none; }
+
 .dropdown-hover .dropdown-toggle::after {
   transition: .2s all ease;
   color: #e7e7e7; }
@@ -61,6 +67,8 @@ header nav a {
 
 main {
   min-height: 400px; }
+  main h1 {
+    text-align: center; }
   main h1, main h2 {
     margin-bottom: 15px; }
 
@@ -70,3 +78,7 @@ footer {
   footer h1 {
     color: lightgray;
     font-size: .75em; }
+  footer .icon i {
+    color: white; }
+  footer .icon:hover i {
+    color: lightgray; }

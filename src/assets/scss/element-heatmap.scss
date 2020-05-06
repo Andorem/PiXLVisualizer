@@ -1,0 +1,25 @@
+#heatmap-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+#heatmap-tooltip {	
+    position: absolute;		
+    text-align: left;		
+    min-width: 40px;					
+    height: auto;					
+    padding: 5px;			
+    font: 12px sans-serif;		
+    background: dimgray;	
+    color: white;
+    font-weight: bold;
+    border: 0px;		
+    border-radius: 5px;			
+    pointer-events: none;
+    // text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; /* Border */
+    box-shadow: 2px 2px 4px rgba(50, 50, 50, 1);
+}
+
+.axis {
+    font-size: 5px;
+}

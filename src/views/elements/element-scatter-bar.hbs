@@ -1,0 +1,38 @@
+<h1>{{header}}</h1>
+<div id="compare" class="row">
+    <div class="col-sm p-0 pt-2 d-flex flex-column">
+        <h3 class="align-self-center">Data Selection</h3>
+        <div class="detector-dropdown-group btn-group align-self-center text-center" style="">
+            <label class="text-secondary mb-0">From</label>
+            <button class="btn btn-secondary btn-lg rounded dropdown-toggle d-flex align-items-center" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true">
+                </span><span class="detector-label">Detector</span>
+            </button>
+            <div class="detector-dropdown dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {{#each data}}
+                {{#ifnoteq @key "type" }}
+                <a class="dropdown-item" href="#" data="{{@key}}">Detector {{@key}}</a>
+                {{/ifnoteq}}
+                {{/each}}
+            </div>
+        </div>
+        <div id="compare-values" class="mb-2 text-center">
+            <label for="compare-values-input" class="text-secondary mb-0">Compare To</label>
+            <select class="custom-select" name="compare-values-input">
+                {{#each elementNames}}
+                <option value="{{@key}}">{{this}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+    </div>
+
+    <div class="col-9 ml-2 p-2 border-left">
+        <div id="scatter-wrapper" class="d-inline-block w-100 bg-light" data-element="{{#base64 data}}{{/base64}}">
+        </div>
+        <div id="bar-wrapper" class="d-inline-block w-100 bg-light" data-element="{{#base64 data}}{{/base64}}">
+        </div>
+    </div>
+</div>
+</div>
