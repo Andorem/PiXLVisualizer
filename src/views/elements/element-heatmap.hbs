@@ -30,6 +30,13 @@
                             <input class="form-control p-1 text-center w-25 m-auto" type="number" name="opacityInput" min="0" max="1" value="0.6" oninput="this.form.opacitySlider.value=this.value">
                         </form>
                 </div>
+                <div id="heatmap-minValue" class="mb-2 text-center">
+                        <label for="heatmap-minValue-slider" class="text-secondary mb-0">Minimum Relative Value (%)</label>
+                        <form id="heatmap-minValue-form" class="form-inline flex-lg-nowrap">
+                            <input class="custom-range p-1" type="range" name="minValueSlider" min="0" max="100" value="0" oninput="this.form.minValueInput.value=this.value">
+                            <input class="form-control p-1 text-center w-25 m-auto" type="number" name="minValueInput" min="0" max="100" value="0" oninput="this.form.minValueSlider.value=this.value">
+                        </form>
+                </div>
                 <div id="heatmap-values" class="mb-2 text-center">
                     <label for="heatmap-values-input" class="text-secondary mb-0">Data Value Type</label>
                     <select class="custom-select">

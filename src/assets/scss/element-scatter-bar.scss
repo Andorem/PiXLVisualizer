@@ -1,3 +1,24 @@
 #scatter-wrapper {
-    height: 300px;
+    height: auto;
+}
+
+#heatmap-wrapper {
+    overflow: hidden;
+}
+
+#heatmap {
+    padding-top: 50px;
+    padding-left: 10px;
+
+    .selection {
+        stroke: red;
+        stroke-dasharray: 4px;
+        stroke-opacity: 0.5;
+        fill: transparent;
+    }
+
+      .selected {
+        stroke: red;
+        stroke-width:0.5px;   
+      }
 }

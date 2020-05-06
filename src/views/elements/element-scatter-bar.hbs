@@ -2,6 +2,9 @@
 <div id="compare" class="row">
     <div class="col-sm p-0 pt-2 d-flex flex-column">
         <h3 class="align-self-center">Data Selection</h3>
+        <div id="heatmap-wrapper">
+            <svg id="heatmap" viewBox="0 0 100 100"></svg>
+        </div>
         <div class="detector-dropdown-group btn-group align-self-center text-center" style="">
             <label class="text-secondary mb-0">From</label>
             <button class="btn btn-secondary btn-lg rounded dropdown-toggle d-flex align-items-center" type="button"
@@ -29,10 +32,12 @@
     </div>
 
     <div class="col-9 ml-2 p-2 border-left">
-        <div id="scatter-wrapper" class="d-inline-block w-100 bg-light" data-element="{{#base64 data}}{{/base64}}">
+        <div id="scatter-wrapper" class="d-inline-block w-100 bg-light p-3" data-element="{{#base64 data}}{{/base64}}">
         </div>
         <div id="bar-wrapper" class="d-inline-block w-100 bg-light" data-element="{{#base64 data}}{{/base64}}">
         </div>
     </div>
 </div>
 </div>
+
+<script src="/js/element-heatmap-mini.js"></script>

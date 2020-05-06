@@ -1,23 +1,39 @@
 "use strict";
 
+var margin = {
+  top: 20,
+  right: 20,
+  bottom: 50,
+  left: 70
+};
 var dimensions = {
   scatter: {
-    width: 350,
-    height: 300
+    width: 450,
+    height: 400
   }
 };
+var scatterWidth = dimensions.scatter.width - margin.left - margin.right;
+var scatterHeight = dimensions.scatter.height - margin.top - margin.bottom;
 var mainData, mainValues, mainName;
 var compareData, compareValues, compareName;
-var detectorName = 'A';
-var isLoading = false;
-var scatter,
-    scatterWrapper = d3.select('#scatter-wrapper');
+var absValues = {},
+    relValues = {},
+    max = {},
+    min = {},
+    scatterData = [];
+var scatterWrapper = d3.select('#scatter-wrapper');
+var scatter = scatterWrapper.append("svg").attr("id", "scatter-svg").attr("width", scatterWidth + margin.left + margin.right).attr("height", scatterHeight + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 var barchart,
     barWrapper = d3.select('#bar-wrapper');
 mainData = JSON.parse(atob(scatterWrapper.attr("data-element")));
+var miniHeatmap = new MiniHeatmap(100, "#heatmap", mainData, "A", 3); // Defaults
+
+var detectorName = 'A';
+var isLoading = false;
 setMainElement(mainData);
 setCompareElement(mainData); // default to comparing to self
 
+setValues(mainData[detectorName], compareData[detectorName]);
 scatterWrapper.attr('data-element', ""); // clear passed data
 
 barWrapper.attr('data-element', "");
@@ -67,9 +83,71 @@ function compareSelectAction(d) {
     setCompareElement(data);
     isLoading = false;
     updateScatterplot(mainValues, compareValues);
+    miniHeatmap.update(mainValues);
     enableControls();
   });
 }
+/* Brush and Zoom */
+// Set initial axises
+
+
+var x = d3.scaleLinear() // .domain([0, max[compareName].rel])
+.range([0, scatterWidth]);
+var xAxis = d3.axisBottom(x);
+var xAxisGroup = scatter.append("g").attr('class', 'axis x-axis').attr("transform", "translate(0," + scatterHeight + ")");
+var xLabel = scatter.append("text").attr("transform", "translate(" + scatterWidth / 2 + " ," + (scatterHeight + margin.top + 20) + ")").style("text-anchor", "middle");
+var y = d3.scaleLinear() // .domain([0, max[mainName].rel])
+.range([scatterHeight, 0]);
+var yAxis = d3.axisLeft(y);
+var yAxisGroup = scatter.append("g").attr('class', 'axis y-axis');
+var yLabel = scatter.append("text").attr("transform", "rotate(-90)").attr("y", 0 - margin.left).attr("x", 0 - scatterHeight / 2).attr("dy", "1em").style("text-anchor", "middle"); // Define brush event
+
+var brush = d3.brush().extent([[0, 0], [scatterWidth, scatterHeight]]).on("end", selectBrushRegion),
+    idleTimeout,
+    idleDelay = 350; // Select brush region to zoom into
+
+function selectBrushRegion() {
+  var selectedRegion = d3.event.selection;
+
+  if (!selectedRegion) {
+    // selection event is null
+    if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+    x.domain(d3.extent(scatterData, function (d) {
+      return d.compareValue.relative;
+    })).nice();
+    y.domain(d3.extent(scatterData, function (d) {
+      return d.mainValue.relative;
+    })).nice();
+  } else {
+    x.domain([selectedRegion[0][0], selectedRegion[1][0]].map(x.invert, x));
+    y.domain([selectedRegion[1][1], selectedRegion[0][1]].map(y.invert, y));
+    scatter.select(".brush-overlay").call(brush.move, null);
+  }
+
+  zoomToBrushRegion();
+}
+
+function idled() {
+  idleTimeout = null;
+}
+
+function zoomToBrushRegion() {
+  var zoomDuration = scatter.transition().duration(750);
+  xAxisGroup.transition(zoomDuration).call(xAxis);
+  yAxisGroup.transition(zoomDuration).call(yAxis);
+  scatter.selectAll("circle").transition(zoomDuration).attr("cx", function (d) {
+    return x(d.compareValue.relative);
+  }).attr("cy", function (d) {
+    return y(d.mainValue.relative);
+  });
+} // Define brush region
+
+
+var brushRegion = scatter.append("defs").append("svg:clipPath").attr("id", "brush-region").append("svg:rect").attr("width", scatterWidth).attr("height", scatterHeight).attr("x", 0).attr("y", 0); // Only show data within brush region
+
+scatter.append("g").attr("id", "scatter-data").attr("clip-path", "url(#brush-region)"); // Brush overlay
+
+scatter.append("g").attr("class", "brush-overlay").call(brush);
 
 function update(name) {
   detectorName = name;
@@ -77,6 +155,7 @@ function update(name) {
   compareValues = compareData[detectorName];
   isLoading = false;
   updateScatterplot(mainValues, compareValues);
+  miniHeatmap.update(mainValues);
 }
 
 function setMainElement(data) {
@@ -91,40 +170,15 @@ function setCompareElement(data) {
   compareName = compareData.type.abbreviation;
 }
 
-function updateScatterplot(mainValues, compareValues) {
-  if (isLoading) return;
+function setValues(mainValues, compareValues) {
+  setAbsoluteValues(mainValues, compareValues);
+  setRelativeValues(mainValues, compareValues);
+  setMaxValues();
+  setMinValues();
+  setScatterData(mainValues, compareValues);
+}
 
-  if ($("#scatter-wrapper svg").length) {
-    // clear old scatterplot
-    d3.selectAll("#scatter-wrapper svg").remove();
-  }
-
-  var margin = {
-    top: 20,
-    right: 20,
-    bottom: 50,
-    left: 70
-  },
-      width = dimensions.scatter.width - margin.left - margin.right,
-      height = dimensions.scatter.height - margin.top - margin.bottom;
-  scatter = scatterWrapper.append("svg").attr("id", "scatter-svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"); // Get values as data arrays
-
-  var absValues = {},
-      relValues = {};
-  absValues[mainName] = mainValues.map(value => {
-    return parseFloat(value.absolute);
-  }).sort();
-  relValues[mainName] = mainValues.map(value => {
-    return parseFloat(value.relative);
-  }).sort();
-  absValues[compareName] = compareValues.map(value => {
-    return parseFloat(value.absolute);
-  }).sort();
-  relValues[compareName] = compareValues.map(value => {
-    return parseFloat(value.relative);
-  }).sort();
-  var max = {},
-      min = {};
+function setMaxValues() {
   max[mainName] = {
     abs: d3.max(absValues[mainName]),
     rel: d3.max(relValues[mainName])
@@ -133,6 +187,9 @@ function updateScatterplot(mainValues, compareValues) {
     abs: d3.max(absValues[compareName]),
     rel: d3.max(relValues[compareName])
   };
+}
+
+function setMinValues() {
   min[mainName] = {
     abs: d3.min(absValues[mainName]),
     rel: d3.min(relValues[mainName])
@@ -140,9 +197,30 @@ function updateScatterplot(mainValues, compareValues) {
   min[compareName] = {
     abs: d3.min(absValues[compareName]),
     rel: d3.min(relValues[compareName])
-  }; // Combine data for both elements into single data point (x and y)
+  };
+}
 
-  var scatterData = [];
+function setAbsoluteValues(mainValues, compareValues) {
+  absValues[mainName] = mainValues.map(value => {
+    return parseFloat(value.absolute);
+  }).sort();
+  absValues[compareName] = compareValues.map(value => {
+    return parseFloat(value.absolute);
+  }).sort();
+}
+
+function setRelativeValues(mainValues, compareValues) {
+  relValues[mainName] = mainValues.map(value => {
+    return parseFloat(value.relative);
+  }).sort();
+  relValues[compareName] = compareValues.map(value => {
+    return parseFloat(value.relative);
+  }).sort();
+} // Combine data for both elements into single data point (x and y)
+
+
+function setScatterData(mainValues, compareValues) {
+  scatterData = [];
   mainValues.forEach((item, index) => {
     var scatterDataItem = {};
     scatterDataItem.mainValue = item; // y
@@ -150,19 +228,31 @@ function updateScatterplot(mainValues, compareValues) {
     scatterDataItem.compareValue = compareValues[index]; // x
 
     scatterData.push(scatterDataItem);
-  }); // Add X axis
+  });
+}
 
-  var x = d3.scaleLinear().domain([0, max[compareName].rel]).range([0, width]);
-  scatter.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)); // X Axis label (element to compare)
+function updateScatterplot(mainValues, compareValues) {
+  if (isLoading) return;
 
-  scatter.append("text").attr("transform", "translate(" + width / 2 + " ," + (height + margin.top + 20) + ")").style("text-anchor", "middle").text("".concat(compareData.type.abbreviation, "_%")); // Add Y axis
+  if ($("#scatter-wrapper svg circle").length) {
+    // clear old scatterplot data
+    d3.selectAll("#scatter-wrapper svg circle").remove();
+  } // Update min, max, absolute, relative, and scatter data arrays
 
-  var y = d3.scaleLinear().domain([0, max[mainName].rel]).range([height, 0]);
-  scatter.append("g").call(d3.axisLeft(y)); // Y Axis label (current main element)
 
-  scatter.append("text").attr("transform", "rotate(-90)").attr("y", 0 - margin.left).attr("x", 0 - height / 2).attr("dy", "1em").style("text-anchor", "middle").text("".concat(mainData.type.abbreviation, "_%")); // Add dots
+  setValues(mainValues, compareValues); // Update X axis
 
-  scatter.append('g').selectAll(".main-value").data(scatterData).enter().append("circle").attr("cx", function (d) {
+  x.domain([0, max[compareName].rel]);
+  xAxisGroup.call(xAxis); // X Axis label (element to compare)
+
+  xLabel.text("".concat(compareData.type.abbreviation, "_%")); // Update Y axis
+
+  y.domain([0, max[mainName].rel]);
+  yAxisGroup.call(yAxis); // Y Axis label (current main element)
+
+  yLabel.text("".concat(mainData.type.abbreviation, "_%")); // Add dots
+
+  d3.select("#scatter-data").selectAll(".scatter-data-value").data(scatterData).enter().append("circle").attr("cx", function (d) {
     return x(d.compareValue.relative);
   }).attr("cy", function (d) {
     return y(d.mainValue.relative);

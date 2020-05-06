@@ -6,8 +6,6 @@ var zoomDefault = 2,
     zoomLevel = zoomDefault;
 var opacityDefault = .6,
     opacityLevel = opacityDefault;
-var minValueDefault = 0,
-    minValue = minValueDefault;
 var valueTypes = {
   "original": 1,
   "relative": 2.5
@@ -63,45 +61,21 @@ function rangeSlideAction(d) {
 zoomSlider.property("value", zoomDefault);
 zoomAction.scaleTo(heatmap, zoomDefault);
 /* Opacity Functionality */
-//Heatmap Opacity Selector
-
-function getOpacity(value) {
-  return value >= minValue ? opacityLevel : 0;
-} // Opacity Slider
-
+// Opacity Slider
 
 var opacitySlider = d3.selectAll("#heatmap-opacity-form input");
 opacitySlider.attr("min", 0).attr("max", 1).attr("step", .1).on("input", opacitySlideAction);
 
 function opacitySlideAction(d) {
   opacityLevel = d3.select(this).property("value");
-  d3.selectAll('.heatmap-data').style('opacity', function (d) {
-    return getOpacity(d.relative);
-  });
+  d3.selectAll('.heatmap-data').style('opacity', opacityLevel);
 } // Opacity Defaults
 
 
 opacitySlider.property("value", opacityDefault);
-d3.selectAll('.heatmap-data').style('opacity', function (d) {
-  return getOpacity(d.relative);
-}); //min value default
-
-var minValueSlider = d3.selectAll("#heatmap-minValue-form input");
-minValueSlider.property("value", minValueDefault);
-minValueSlider.attr("min", 0).attr("max", 100).attr("step", .1).on("input", minValueSlideAction);
-d3.selectAll('.heatmap-data').style('opacity', function (d) {
-  return getOpacity(d.relative);
-});
-
-function minValueSlideAction(d) {
-  minValue = d3.select(this).property("value");
-  d3.selectAll('.heatmap-data').style('opacity', function (d) {
-    return getOpacity(d.relative);
-  });
-}
+d3.selectAll('.heatmap-data').style('opacity', opacityDefault);
 /* Data Value Type Functionality */
 // Data Value Type Select
-
 
 var valueSelect = d3.selectAll("#heatmap-values select");
 valueSelect.property("value", valueDefault).on("input", valueSelectAction);
@@ -202,9 +176,7 @@ function updateHeatmap(values) {
     return parseFloat(d.coords.y);
   }).attr("width", valueWidth).attr("height", 2.5).style("fill", function (d) {
     return getColor(d.relative);
-  }).style("opacity", function (d) {
-    return getOpacity(d.relative);
-  }).on("mouseover", function (d) {
+  }).style("opacity", opacityLevel).on("mouseover", function (d) {
     // Show tooltip
     tooltip.html("<b>X:</b> ".concat(d.coords.x, ", <b>Y:</b> ").concat(d.coords.y, "<br>\n                <b>Relative:</b> ").concat(d.relative, "<br>\n                <b>Absolute:</b> ").concat(d.absolute, "\n            "));
     tooltip.style("display", null).style("left", d3.mouse(heatmapWrapper.node())[0] + 20 + "px") // mouse relative to heatmap
@@ -223,9 +195,7 @@ function updateHeatmap(values) {
     // Remove hover effects
     d3.select(this).style("fill", function (d) {
       return getColor(d.relative);
-    }).style("opacity", function (d) {
-      return getOpacity(d.relative);
-    }).style("stroke", "none");
+    }).style('opacity', opacityLevel).style("stroke", "none");
   });
 }
 

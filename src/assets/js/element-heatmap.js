@@ -5,6 +5,7 @@ let height = 580;
 
 let zoomDefault = 2, zoomLevel = zoomDefault;
 let opacityDefault = .6, opacityLevel = opacityDefault;
+let minValueDefault = 0, minValue = minValueDefault;
 let valueTypes = {
     "original": 1,
     "relative": 2.5
@@ -79,7 +80,12 @@ zoomAction.scaleTo(heatmap, zoomDefault);
 
 /* Opacity Functionality */
 
-// Opacity Slider
+//Heatmap Opacity Selector
+    function getOpacity(value) {
+        return (value >= minValue)? opacityLevel : 0;
+    }
+
+    // Opacity Slider
 var opacitySlider = d3.selectAll("#heatmap-opacity-form input")
 opacitySlider
   .attr("min", 0)
@@ -89,12 +95,28 @@ opacitySlider
 
 function opacitySlideAction(d){
     opacityLevel = d3.select(this).property("value");
-    d3.selectAll('.heatmap-data').style('opacity', opacityLevel);
+    d3.selectAll('.heatmap-data').style('opacity', function (d) { return getOpacity(d.relative) });
 }
 
 // Opacity Defaults
 opacitySlider.property("value", opacityDefault);
-d3.selectAll('.heatmap-data').style('opacity', opacityDefault);
+d3.selectAll('.heatmap-data').style('opacity', function (d) { return getOpacity(d.relative) });
+
+//min value default
+var minValueSlider = d3.selectAll("#heatmap-minValue-form input")
+minValueSlider.property("value", minValueDefault);
+minValueSlider
+  .attr("min", 0)
+  .attr("max", 100)
+  .attr("step", .1)
+  .on("input", minValueSlideAction);
+d3.selectAll('.heatmap-data').style('opacity', function (d) { return getOpacity(d.relative) });
+
+
+function minValueSlideAction(d){
+    minValue = d3.select(this).property("value");
+    d3.selectAll('.heatmap-data').style('opacity', function (d) { return getOpacity(d.relative) });
+}
 
 /* Data Value Type Functionality */
 
@@ -187,6 +209,8 @@ function updateHeatmap(values) {
     .interpolator(getElementColor(data.type.abbreviation))
     .domain([0, max.rel]);
 
+
+
     // X Scale
     var xScale = d3.scaleLinear()
     .domain([min.x, max.x])
@@ -261,7 +285,7 @@ function updateHeatmap(values) {
       .attr("width", valueWidth)
       .attr("height", 2.5)
       .style("fill", function(d) { return getColor(d.relative)} )
-      .style("opacity", opacityLevel) 
+      .style("opacity", function (d) { return getOpacity(d.relative) }) 
       .on("mouseover", function(d) {
           
             // Show tooltip
@@ -295,7 +319,7 @@ function updateHeatmap(values) {
             d3.select(this).style("fill", function(d) {
                 return getColor(d.relative);
             })
-                .style('opacity', opacityLevel)
+                .style("opacity", function (d) { return getOpacity(d.relative) })
                 .style("stroke", "none");
         });
    
@@ -310,3 +334,4 @@ function multiplier(values, multiplier) {
         return newValues;
       }
 }
+
