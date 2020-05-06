@@ -26,8 +26,8 @@ export function showElementMain(req, res) {
         "Comparison": {link: `/element/${type}/compare`}
       },
       items: {
-        "Heatmap": {image: `../../img/preview/${type}/preview-heatmap.png`, link: 'heatmap'},
-        "Comparison": {image: `../../img/preview/${type}/preview-scatter.png`, link: 'compare'}
+        "Heatmap": {image: `../../img/preview/${type.toLowerCase()}/preview-heatmap.png`, link: 'heatmap'},
+        "Comparison": {image: `../../img/preview/${type.toLowerCase()}/preview-scatter.png`, link: 'compare'}
       }
     });
   }
