@@ -1,5 +1,5 @@
-# COMP 584 Project
-PiXL visualization built with Node.js and d3.js using MVC architecture
+# PiXL Visualizer
+Interactive visualizations of NASA Mars 2020's PiXL sensor data, built with Node.js and d3.js using MVC architecture.
 
 ## Contributors
 * Tommy Avetisyan
@@ -10,11 +10,15 @@ PiXL visualization built with Node.js and d3.js using MVC architecture
 
 ## Installation
 ```
-git clone https://github.com/andorem/COMP584Project.git
+git clone https://github.com/andorem/PiXLVisualizer.git
 npm install
-npm start // Start server and build frontend
-npm run watch // Start dev server with live reload
-npm run prod // Build and serve
+npm start
+```
+
+### Other Commands
+```
+npm run watch // Start dev server with reload
+npm run prod // Build and serve for live production
 ```
 
 ## Structure
@@ -34,6 +38,7 @@ src // All source files to build and run
 public // Frontend
     css
     js
+    img
     server.js
 ```
 
